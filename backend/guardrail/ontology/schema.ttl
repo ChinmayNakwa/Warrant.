@@ -1,0 +1,87 @@
+# The ontology: what a model's answer may say.
+#
+# Entity types, the relations allowed between them, and the kind of telemetry
+# event that can evidence each relation. Techniques are in attack.ttl
+# (generated from MITRE ATT&CK). The rules an answer must meet are in
+# shapes.ttl.
+#
+# Every class and property has a wr:name: the word a model writes. An answer
+# is matched to the ontology by those names, as literals. No IRI is ever built
+# from model text.
+
+@prefix wr:  <https://warrant.example/ontology#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+wr: a owl:Ontology ;
+    rdfs:label "Warrant ontology" .
+
+# --- entity types ---------------------------------------------------------- #
+
+wr:EntityType a owl:Class .
+
+wr:Process     a owl:Class, wr:EntityType ; wr:name "Process" .
+wr:File        a owl:Class, wr:EntityType ; wr:name "File" .
+wr:Network     a owl:Class, wr:EntityType ; wr:name "Network" .
+wr:RegistryKey a owl:Class, wr:EntityType ; wr:name "RegistryKey" .
+wr:User        a owl:Class, wr:EntityType ; wr:name "User" .
+wr:Host        a owl:Class, wr:EntityType ; wr:name "Host" .
+wr:Technique   a owl:Class, wr:EntityType ; wr:name "Technique" .
+
+# An ATT&CK id that is no longer in use (revoked or deprecated). Not a
+# Technique: an answer may not claim one.
+wr:RetiredTechnique a owl:Class .
+
+# --- telemetry event kinds -------------------------------------------------- #
+
+wr:EventKind a owl:Class .
+
+wr:kind_process  a wr:EventKind ; wr:name "process" .
+wr:kind_network  a wr:EventKind ; wr:name "network" .
+wr:kind_file     a wr:EventKind ; wr:name "file" .
+wr:kind_registry a wr:EventKind ; wr:name "registry" .
+
+# --- relations -------------------------------------------------------------- #
+# wr:evidencedBy: the event kinds a claim of this relation may cite. A
+# relation with none (exhibits) may cite any event.
+
+wr:Relation a owl:Class .
+
+wr:spawned a owl:ObjectProperty, wr:Relation ; wr:name "spawned" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Process ;
+    wr:evidencedBy wr:kind_process .
+
+wr:authenticated_as a owl:ObjectProperty, wr:Relation ; wr:name "authenticated_as" ;
+    rdfs:domain wr:Process ; rdfs:range wr:User ;
+    wr:evidencedBy wr:kind_process .
+
+wr:connected_to a owl:ObjectProperty, wr:Relation ; wr:name "connected_to" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Network ;
+    wr:evidencedBy wr:kind_network .
+
+wr:wrote a owl:ObjectProperty, wr:Relation ; wr:name "wrote" ;
+    rdfs:domain wr:Process ; rdfs:range wr:File ;
+    wr:evidencedBy wr:kind_file .
+
+wr:read a owl:ObjectProperty, wr:Relation ; wr:name "read" ;
+    rdfs:domain wr:Process ; rdfs:range wr:File ;
+    wr:evidencedBy wr:kind_file .
+
+wr:dropped_by a owl:ObjectProperty, wr:Relation ; wr:name "dropped_by" ;
+    rdfs:domain wr:File ; rdfs:range wr:Process ;
+    wr:evidencedBy wr:kind_file .
+
+wr:modified a owl:ObjectProperty, wr:Relation ; wr:name "modified" ;
+    rdfs:domain wr:Process ; rdfs:range wr:RegistryKey ;
+    wr:evidencedBy wr:kind_registry .
+
+wr:exhibits a owl:ObjectProperty, wr:Relation ; wr:name "exhibits" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Technique .
+
+# --- what an answer is made of (the data graph validator.py builds) --------- #
+
+wr:Answer         a owl:Class .   # wr:verdict
+wr:TechniqueClaim a owl:Class .   # wr:techniqueId, wr:citesRef*
+wr:Claim          a owl:Class .   # wr:subjectType, wr:relationName, wr:objectType,
+                                   # wr:subjectKey, wr:objectKey, wr:citesRef
+wr:Event          a owl:Class .   # wr:ref, wr:kind, wr:showsKind*, wr:value*

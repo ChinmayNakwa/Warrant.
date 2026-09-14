@@ -1,0 +1,171 @@
+# The rules a model's answer must meet, as SHACL shapes over the data graph
+# validator.py builds (one node per technique claim, claim and
+# event, plus the answer itself).
+#
+# One named shape per rule. The shape's local name is the violation code the
+# backend reports; its sh:message is fixed text that is safe to show a model.
+# A rule only fires when the things it depends on are known, so one mistake is
+# one violation: an unknown relation is not also a disallowed triple, and a
+# claim citing a missing event is not also checked against that event.
+
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix wr:  <https://warrant.example/ontology#> .
+@prefix wrs: <https://warrant.example/shapes#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+wrs: a owl:Ontology ;
+    sh:declare [ sh:prefix "wr" ; sh:namespace "https://warrant.example/ontology#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "rdfs" ; sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI ] .
+
+# --- techniques -------------------------------------------------------------- #
+
+wrs:technique_unknown a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim ;
+    sh:message "this is not a MITRE ATT&CK technique id" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:techniqueId ?id .
+            FILTER NOT EXISTS {
+                ?t wr:techniqueId ?id ; a ?class .
+                FILTER (?class IN (wr:Technique, wr:RetiredTechnique))
+            }
+        }""" ] .
+
+wrs:technique_retired a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim ;
+    sh:message "this ATT&CK id is no longer in use" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:techniqueId ?id .
+            ?t a wr:RetiredTechnique ; wr:techniqueId ?id .
+        }""" ] .
+
+wrs:technique_uncited a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim ;
+    sh:message "a technique must cite at least one event that shows it" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this a wr:TechniqueClaim .
+            FILTER NOT EXISTS { $this wr:citesRef ?ref }
+        }""" ] .
+
+# Only when ATT&CK says which event kinds can show the technique, and the
+# claim cites at least one real event. wr:showsKind is the event's own kind
+# plus "process": any event shows the process that logged it running.
+wrs:technique_evidence_kind a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim ;
+    sh:message "none of the cited events is of a kind that can show this technique" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:techniqueId ?id .
+            ?t a wr:Technique ; wr:techniqueId ?id .
+            FILTER EXISTS { ?t wr:observableAs ?anyKind }
+            FILTER EXISTS { $this wr:citesRef ?anyRef . ?anyEvent a wr:Event ; wr:ref ?anyRef }
+            FILTER NOT EXISTS {
+                $this wr:citesRef ?ref .
+                ?event a wr:Event ; wr:ref ?ref ; wr:showsKind ?kind .
+                ?t wr:observableAs ?kind .
+            }
+        }""" ] .
+
+# --- citations (techniques and claims) --------------------------------------- #
+
+wrs:event_missing a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim, wr:Claim ;
+    sh:message "this cites an event ref that is not in the telemetry" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:citesRef ?ref .
+            FILTER NOT EXISTS { ?event a wr:Event ; wr:ref ?ref }
+        }""" ] .
+
+# --- claims ------------------------------------------------------------------ #
+
+wrs:type_unknown a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "subject_type and object_type must each be one of the entity types" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            { $this wr:subjectType ?name } UNION { $this wr:objectType ?name }
+            FILTER NOT EXISTS { ?type a wr:EntityType ; wr:name ?name }
+        }""" ] .
+
+wrs:relation_unknown a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "relation must be one of the relations" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:relationName ?name .
+            FILTER NOT EXISTS { ?relation a wr:Relation ; wr:name ?name }
+        }""" ] .
+
+wrs:triple_not_allowed a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "this relation is not allowed between these two entity types" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:relationName ?relationName ;
+                  wr:subjectType ?subjectName ;
+                  wr:objectType ?objectName .
+            ?relation a wr:Relation ; wr:name ?relationName ;
+                      rdfs:domain ?domain ; rdfs:range ?range .
+            ?subjectType a wr:EntityType ; wr:name ?subjectName .
+            ?objectType a wr:EntityType ; wr:name ?objectName .
+            FILTER (?domain != ?subjectType || ?range != ?objectType)
+        }""" ] .
+
+wrs:claim_evidence_kind a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "the cited event is not of a kind that can show this relation" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:relationName ?relationName ; wr:citesRef ?ref .
+            ?relation a wr:Relation ; wr:name ?relationName .
+            ?event a wr:Event ; wr:ref ?ref ; wr:kind ?kind .
+            FILTER EXISTS { ?relation wr:evidencedBy ?anyKind }
+            FILTER NOT EXISTS { ?relation wr:evidencedBy ?kind }
+        }""" ] .
+
+# A claim's subject and object must be values of the event it cites. (The
+# object of an `exhibits` claim is a technique id; see claim_technique_unknown.)
+wrs:value_not_in_event a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "the subject or object is not a value of the cited event" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:citesRef ?ref .
+            ?event a wr:Event ; wr:ref ?ref .
+            { $this wr:subjectKey ?value } UNION { $this wr:objectKey ?value }
+            FILTER NOT EXISTS { ?event wr:value ?value }
+        }""" ] .
+
+wrs:claim_technique_unknown a sh:NodeShape ;
+    sh:targetClass wr:Claim ;
+    sh:message "the object of a Technique claim must be a MITRE ATT&CK technique id in use" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:objectTechniqueId ?id .
+            FILTER NOT EXISTS { ?t a wr:Technique ; wr:techniqueId ?id }
+        }""" ] .
+
+# --- verdict ----------------------------------------------------------------- #
+
+wrs:verdict_malicious_without_technique a sh:NodeShape ;
+    sh:targetClass wr:Answer ;
+    sh:message "a MALICIOUS verdict needs at least one technique" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:verdict "MALICIOUS" .
+            FILTER NOT EXISTS { ?technique a wr:TechniqueClaim }
+        }""" ] .
+
+wrs:verdict_benign_with_technique a sh:NodeShape ;
+    sh:targetClass wr:Answer ;
+    sh:message "a BENIGN verdict cannot list a technique" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:verdict "BENIGN" .
+            FILTER EXISTS { ?technique a wr:TechniqueClaim }
+        }""" ] .
