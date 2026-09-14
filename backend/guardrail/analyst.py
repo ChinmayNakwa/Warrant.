@@ -1,7 +1,9 @@
 """One run: slice the incident's telemetry, have a model read it, check its
 answer against the ontology.
 
-The answer is kept as given. The check only records what it finds.
+`baseline` accepts the answer as given and only records what the check finds.
+`guarded` sends a failing answer back for repair, then removes whatever is
+still wrong. Both start from the same prompt.
 
 The model only ever returns text that is parsed into an `Answer`; every
 database row is written here.
@@ -19,6 +21,7 @@ from sqlalchemy.orm import Session
 from backend.config import get_settings
 from backend.database import utcnow
 from backend.guardrail.answer import Answer, AnswerError, parse_answer
+from backend.guardrail.guard import build_repair_prompt, enforce
 from backend.guardrail.prompt import build_system_prompt, build_user_prompt
 from backend.guardrail.slicer import build_slice
 from backend.guardrail.validator import Violation, validate
@@ -26,7 +29,7 @@ from backend.incidents import IncidentNotFound, get_owned_incident
 from backend.llm import Completer, ModelError
 from backend.models import GuardrailRun
 
-Mode = Literal["baseline"]
+Mode = Literal["baseline", "guarded"]
 
 # Progress only: ids, counts and timings, never telemetry or model text.
 log = logging.getLogger("warrant.guardrail")
@@ -39,7 +42,7 @@ def _failure(exc: Exception) -> str:
 
 def _ask(complete: Completer, system: str, user: str) -> Answer:
     """Retries once if the reply is not a valid answer, saying which fields
-    failed."""
+    failed. This is about format only, so both modes get it."""
     try:
         return parse_answer(complete(system, user))
     except AnswerError as exc:
@@ -48,6 +51,36 @@ def _ask(complete: Completer, system: str, user: str) -> Answer:
             "Respond with exactly one valid JSON object in the format given."
         )
         return parse_answer(complete(system, retry))
+
+
+def _repair(
+    complete: Completer,
+    system: str,
+    user: str,
+    answer: Answer,
+    violations: list[Violation],
+    events: list[dict],
+    *,
+    nonce: str,
+    max_rounds: int,
+) -> tuple[Answer, list[Violation], int, str | None]:
+    """Send a failing answer back with its violations, up to `max_rounds`
+    times. A reply replaces the answer only if it breaks fewer rules; otherwise
+    the loop stops with the answer in hand. Returns that answer, its
+    violations, the rounds used and a note if the loop stopped early."""
+    rounds = 0
+    while violations and rounds < max_rounds:
+        rounds += 1
+        prompt = build_repair_prompt(user, answer, violations, nonce=nonce)
+        try:
+            candidate = parse_answer(complete(system, prompt))
+        except Exception as exc:
+            return answer, violations, rounds, f"repair stopped: {_failure(exc)}"
+        found = validate(candidate, events)
+        if len(found) >= len(violations):
+            return answer, violations, rounds, "repair stopped: the reply broke no fewer rules"
+        answer, violations = candidate, found
+    return answer, violations, rounds, None
 
 
 def run_analysis(
@@ -111,10 +144,17 @@ def run_analysis(
             run.note = f"model failed: {_failure(exc)}"
 
     if answer is not None:
-        # Record the answer and what the check finds in it.
+        # Both modes record the first answer and what the check finds in it.
         violations = validate(answer, events)
         run.first_answer_json = answer.model_dump_json()
         run.violations_json = json.dumps([v.as_dict() for v in violations])
+        if mode == "guarded":
+            answer, remaining, run.repair_rounds, run.note = _repair(
+                counted, system, user, answer, violations, events,
+                nonce=nonce, max_rounds=settings.max_repairs,
+            )
+            answer, dropped = enforce(answer, remaining, events)
+            run.dropped_json = json.dumps(dropped)
         run.verdict = answer.verdict
         run.confidence = answer.confidence
         run.techniques_json = json.dumps(sorted({t.id for t in answer.techniques}))

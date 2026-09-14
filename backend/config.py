@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     # How much telemetry the model reads for one incident
     max_slice_events: int = 120
     slice_window_seconds: int = 120
+    # Guarded mode: how often a failing answer goes back to the model before
+    # whatever is still wrong is removed
+    max_repairs: int = 2
     # One run per incident at a time. A claim left behind by a server killed
     # mid-run expires after this long.
     run_claim_ttl_seconds: int = 15 * 60
