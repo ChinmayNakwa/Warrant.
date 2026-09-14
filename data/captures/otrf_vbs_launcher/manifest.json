@@ -1,0 +1,21 @@
+{
+  "name": "otrf_vbs_launcher",
+  "host": "WORKSTATION5.theshire.local / WORKSTATION6.theshire.local / MORDORDC.theshire.local",
+  "scenario": "empire_launcher_vbs",
+  "synthetic": false,
+  "event_count": 331,
+  "starts_at": "2020-09-04T20:09:38.962",
+  "ends_at": "2020-09-04T20:10:47.327",
+  "source": {
+    "repository": "github.com/OTRF/Security-Datasets",
+    "license": "MIT",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "path": "datasets/atomic/windows/execution/host/empire_launcher_vbs.zip",
+    "zip_sha256": "812da270cf8cda6f1948fb6275410f15dc1794d0bd6b623c9c25b2518285019c",
+    "converted_by": "scripts/fetch_otrf_capture.py",
+    "records_kept": 520,
+    "records_dropped": 1547,
+    "records_malformed": 0
+  },
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+}

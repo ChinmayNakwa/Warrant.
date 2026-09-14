@@ -1,0 +1,37 @@
+{
+  "capture": "otrf_lsa_secrets_psexec",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/credential_access/host/cmd_psexec_lsa_secrets_dump.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "lsa_secrets_psexec",
+      "description": "Real capture: PsExec -s runs reg save HKLM\\security\\policy\\secrets as SYSTEM through its PSEXESVC service, writing the LSA secrets hive to a file in the user's Temp folder.",
+      "alert_title": "Endpoint alert: PsExec.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process PsExec.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-40a6-5f8d-a005-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-40a6-5f8d-a005-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1003.004"
+      ],
+      "accepted_techniques": [
+        "T1569.002",
+        "T1543.003"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-201019033054",
+        "title": "Psexec Reg LSA Secrets Dump",
+        "techniques": [
+          "T1003.004"
+        ]
+      },
+      "label_note": "T1569.002 and T1543.003 accepted: PsExec installs and starts the PSEXESVC service to run the command."
+    }
+  ]
+}

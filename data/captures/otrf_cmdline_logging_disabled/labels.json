@@ -1,0 +1,40 @@
+{
+  "capture": "otrf_cmdline_logging_disabled",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/defense_evasion/host/reg_cmd_process_commandline_logging_disabled.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "command_line_logging_disabled",
+      "description": "Real capture: a payload run from Downloads opens a cmd.exe that uses reg add to set ProcessCreationIncludeCmdLine_Enabled to 0, turning off command-line logging for process-creation events.",
+      "alert_title": "Endpoint alert: reg.exe on pedro-computer",
+      "alert": "Alert on pedro-computer: process reg.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{564ff025-daee-62fe-7b03-000000000700}",
+      "related_process_guids": [
+        "{564ff025-daee-62fe-7b03-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1562.002"
+      ],
+      "accepted_techniques": [
+        "T1112",
+        "T1059.003",
+        "T1204.002",
+        "T1071.001",
+        "T1571"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-220703123711",
+        "title": "Disabling Process Command Line Logging via Registry Modification",
+        "techniques": [
+          "T1562.002"
+        ]
+      },
+      "label_note": "Accepted: the change is a registry write (T1112) made from cmd.exe (T1059.003), started by a payload the user ran (T1204.002) that connects to 192.168.56.40:8443 (T1071.001, T1571). OTRF's T1562.002 is T1685.001 in current ATT&CK; scoring maps both."
+    }
+  ]
+}

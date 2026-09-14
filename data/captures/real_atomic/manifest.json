@@ -1,0 +1,10 @@
+{
+  "name": "real_atomic",
+  "host": "WORKSTATION5 / WORKSTATION5.mordor.local",
+  "scenario": "real_atomic_mixed",
+  "synthetic": false,
+  "event_count": 119,
+  "starts_at": "2020-07-22T04:18:46.905",
+  "ends_at": "2020-10-18T23:50:07.635",
+  "notes": "Real Sysmon telemetry from two lab attack simulations in OTRF/Security-Datasets (github.com/OTRF/Security-Datasets, MIT license). Each source file records one atomic ATT&CK technique on its own lab host and timeframe; the two are merged into one capture (their ProcessGuid namespaces do not collide). Converted from OTRF's flat JSON export with scripts/adapt_otrf_capture.py; only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept. 127 lines were adapted; 8 are byte-identical duplicates in the source log, leaving 119 stored events. Ground truth in labels.json."
+}

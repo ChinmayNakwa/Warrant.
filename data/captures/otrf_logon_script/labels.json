@@ -1,0 +1,36 @@
+{
+  "capture": "otrf_logon_script",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/persistence/host/cmd_userinitmprlogonscript_batch.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "logon_script_registry",
+      "description": "Real capture: reg.exe sets HKCU\\Environment\\UserInitMprLogonScript to a batch file in the user's Temp folder, so the file runs at every logon.",
+      "alert_title": "Endpoint alert: reg.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process reg.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-4fac-5f8e-0208-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-4fac-5f8e-0208-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1037.001"
+      ],
+      "accepted_techniques": [
+        "T1112"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-201019224718",
+        "title": "Logon Scripts via UserInitMprLogonScript",
+        "techniques": [
+          "T1037.001"
+        ]
+      },
+      "label_note": "T1112 accepted: the persistence is a registry value write."
+    }
+  ]
+}

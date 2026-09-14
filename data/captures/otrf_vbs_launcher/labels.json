@@ -1,0 +1,43 @@
+{
+  "capture": "otrf_vbs_launcher",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/execution/host/empire_launcher_vbs.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "vbs_launcher",
+      "description": "Real capture: a user runs launcher.vbs from the Desktop; wscript.exe starts a hidden, encoded PowerShell that connects to 10.10.10.5:80 and runs whoami.",
+      "alert_title": "Endpoint alert: wscript.exe on WORKSTATION5.theshire.local",
+      "alert": "Alert on WORKSTATION5.theshire.local: process wscript.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{860ba2e3-9f13-5f52-2603-000000000400}",
+      "related_process_guids": [
+        "{860ba2e3-9f13-5f52-2603-000000000400}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1059.005"
+      ],
+      "accepted_techniques": [
+        "T1059.001",
+        "T1027",
+        "T1071.001",
+        "T1105",
+        "T1033",
+        "T1564.003",
+        "T1140",
+        "T1204.002"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-190518182022",
+        "title": "Empire VBS Execution",
+        "techniques": [
+          "T1059.005"
+        ]
+      },
+      "label_note": "Accepted: the user opens the file (T1204.002); it starts a hidden (T1564.003), encoded (T1027, T1140) PowerShell (T1059.001) that reaches a web server (T1071.001, T1105) and runs whoami (T1033)."
+    }
+  ]
+}

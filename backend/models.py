@@ -4,7 +4,17 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database import Base, utcnow
@@ -54,3 +64,60 @@ class RateLimitHit(Base):
     bucket_key: Mapped[str] = mapped_column(String, index=True, nullable=False)
     window_start: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+
+class Capture(Base):
+    """One host's recorded telemetry. Shared reference data: every user can
+    file incidents against any capture."""
+
+    __tablename__ = "captures"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    name: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    host: Mapped[str] = mapped_column(String, nullable=False)
+    scenario: Mapped[str | None] = mapped_column(String, nullable=True)
+    synthetic: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    event_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    starts_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    ends_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+    events: Mapped[list["Event"]] = relationship(
+        back_populates="capture", cascade="all, delete-orphan"
+    )
+
+
+class Event(Base):
+    """One Sysmon event. Untrusted input: `raw_json` is the original record and
+    the typed columns are extracted from it for querying."""
+
+    __tablename__ = "events"
+    __table_args__ = (
+        UniqueConstraint("capture_id", "dedupe_key", name="uq_event_capture_dedupe"),
+        Index("ix_events_capture_type_ts", "capture_id", "event_type", "ts"),
+        Index("ix_events_capture_guid", "capture_id", "process_guid", "event_type", "ts"),
+        Index("ix_events_capture_parent_guid", "capture_id", "parent_process_guid", "event_type"),
+        Index("ix_events_capture_rarity", "capture_id", text("rarity DESC"), "ts"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    capture_id: Mapped[str] = mapped_column(
+        ForeignKey("captures.id", ondelete="CASCADE"), nullable=False
+    )
+    ts: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    # process | network | file | registry
+    event_type: Mapped[str] = mapped_column(String, nullable=False)
+    process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
+    parent_process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
+    image: Mapped[str | None] = mapped_column(String, nullable=True)
+    command_line: Mapped[str | None] = mapped_column(String, nullable=True)
+    actor_user: Mapped[str | None] = mapped_column(String, nullable=True)
+    dest_ip: Mapped[str | None] = mapped_column(String, nullable=True)
+    dest_port: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    target_object: Mapped[str | None] = mapped_column(String, nullable=True)
+    raw_json: Mapped[str] = mapped_column(String, nullable=False)
+    rarity: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    # sha256(capture name + raw record), so re-ingesting adds nothing
+    dedupe_key: Mapped[str] = mapped_column(String, nullable=False)
+
+    capture: Mapped[Capture] = relationship(back_populates="events")

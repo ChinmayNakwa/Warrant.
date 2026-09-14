@@ -1,0 +1,36 @@
+{
+  "capture": "otrf_bitsadmin_download",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/defense_evasion/host/cmd_bitsadmin_download_psh_script.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "bitsadmin_download",
+      "description": "Real capture: bitsadmin.exe /transfer downloads a file from raw.githubusercontent.com into the user's Temp folder as a .ps1. The BITS service process does the transfer.",
+      "alert_title": "Endpoint alert: bitsadmin.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process bitsadmin.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-79fb-5f92-7117-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-79fb-5f92-7117-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1197"
+      ],
+      "accepted_techniques": [
+        "T1105"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-201023023651",
+        "title": "Bitsadmin Download Malicious File",
+        "techniques": [
+          "T1197"
+        ]
+      },
+      "label_note": "T1105 accepted: the BITS job brings a file onto the host."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "otrf_logon_script",
+  "host": "WORKSTATION5",
+  "scenario": "cmd_userinitmprlogonscript_batch",
+  "synthetic": false,
+  "event_count": 25,
+  "starts_at": "2020-10-20T02:46:43.052",
+  "ends_at": "2020-10-20T02:47:13.948",
+  "source": {
+    "repository": "github.com/OTRF/Security-Datasets",
+    "license": "MIT",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "path": "datasets/atomic/windows/persistence/host/cmd_userinitmprlogonscript_batch.zip",
+    "zip_sha256": "53a01d6976b7567a2464628d850c51cc48b1a91a932cd2b0e110a510bcedf858",
+    "converted_by": "scripts/fetch_otrf_capture.py",
+    "records_kept": 27,
+    "records_dropped": 95,
+    "records_malformed": 0
+  },
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+}

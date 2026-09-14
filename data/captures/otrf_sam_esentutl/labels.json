@@ -1,0 +1,36 @@
+{
+  "capture": "otrf_sam_esentutl",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/credential_access/host/cmd_sam_copy_esentutl.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "sam_copy_esentutl",
+      "description": "Real capture: esentutl.exe copies the locked SAM hive through a volume shadow copy (/y /vss) to C:\\ProgramData\\SAM.",
+      "alert_title": "Endpoint alert: esentutl.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process esentutl.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-15ef-5f8d-e704-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-15ef-5f8d-e704-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1003.002"
+      ],
+      "accepted_techniques": [
+        "T1006"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-201019002900",
+        "title": "SAM Copy via Esentutl VSS",
+        "techniques": [
+          "T1003.002"
+        ]
+      },
+      "label_note": "T1006 accepted: the copy reads the hive through a volume shadow copy."
+    }
+  ]
+}

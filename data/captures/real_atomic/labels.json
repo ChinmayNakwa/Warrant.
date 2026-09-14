@@ -1,0 +1,43 @@
+{
+  "capture": "real_atomic",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "converted_by": "scripts/adapt_otrf_capture.py",
+    "note": "Two independent atomic-technique recordings, merged (ProcessGuid namespaces checked non-colliding before merge, see manifest.json)."
+  },
+  "scenarios": [
+    {
+      "name": "credential_access_comsvcs",
+      "source_file": "datasets/atomic/windows/credential_access/host/psh_lsass_memory_dump_comsvcs.zip",
+      "description": "Real capture: rundll32.exe (child of a PowerShell process) invokes comsvcs.dll,MiniDump against lsass.exe, writing a dump file. Command line: \"C:\\Windows\\System32\\rundll32.exe\" C:\\windows\\System32\\comsvcs.dll MiniDump 756 C:\\Users\\wardog\\AppData\\Local\\Temp\\lsass-comsvcs.dmp full",
+      "alert_title": "Endpoint alert: rundll32.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process rundll32.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-d4ad-5f8c-3303-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-d4ad-5f8c-3303-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1003.001"
+      ],
+      "anchor_has_process_create_event": true
+    },
+    {
+      "name": "persistence_run_key",
+      "source_file": "datasets/atomic/windows/persistence/host/empire_persistence_registry_modification_run_keys_elevated_user.zip",
+      "description": "Real capture: powershell.exe writes HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\Updater, whose value is itself a second-stage encoded PowerShell launcher read back out of a registry value (fileless persistence): Details=\"...powershell.exe\" -c \"$x=$((gp HKLM:SOFTWARE\\Microsoft\\Windows\\CurrentVersion Debug).Debug);powershell -Win Hidden -enc $x\"",
+      "alert_title": "Endpoint alert: powershell.exe on WORKSTATION5.mordor.local",
+      "alert": "Alert on WORKSTATION5.mordor.local: process powershell.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{b59756a9-b239-5f17-5307-000000000400}",
+      "related_process_guids": [
+        "{b59756a9-b239-5f17-5307-000000000400}"
+      ],
+      "expected_verdict": "SUSPICIOUS",
+      "expected_techniques": [
+        "T1547.001"
+      ],
+      "anchor_has_process_create_event": false,
+      "caveat": "OTRF's recording of this technique starts after the actor process was already running, so the source file has no Sysmon EventID=1 (process-create) for this ProcessGuid - only its registry writes (19x) and network activity. One technique with nothing else to corroborate it is labelled SUSPICIOUS, not MALICIOUS."
+    }
+  ]
+}

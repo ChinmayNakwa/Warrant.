@@ -1,0 +1,38 @@
+{
+  "capture": "small_lab",
+  "scenarios": [
+    {
+      "name": "malicious_powershell_chain",
+      "description": "Office-parent spawns encoded PowerShell, which contacts a local HTTP server, drops a file, sets a Run-key persistence entry, and spawns a child process.",
+      "alert_title": "Endpoint alert: powershell.exe on WIN11-LAB",
+      "alert": "Alert on WIN11-LAB: process powershell.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000000201}",
+      "related_process_guids": [
+        "{00000000-0000-0000-0000-000000000201}",
+        "{00000000-0000-0000-0000-000000000202}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": ["T1059.001", "T1027", "T1105", "T1547.001"]
+    },
+    {
+      "name": "credential_access",
+      "description": "rundll32 invokes comsvcs.dll MiniDump against lsass.exe, writing a dump file — the LSASS memory access signature. No real credentials involved.",
+      "alert_title": "Endpoint alert: rundll32.exe on WIN11-LAB",
+      "alert": "Alert on WIN11-LAB: process rundll32.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000000301}",
+      "related_process_guids": ["{00000000-0000-0000-0000-000000000301}"],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": ["T1003.001"]
+    },
+    {
+      "name": "benign_powershell",
+      "description": "Interactive admin PowerShell session launched from explorer.exe. No network, no encoded command, no persistence.",
+      "alert_title": "Endpoint alert: powershell.exe on WIN11-LAB",
+      "alert": "Alert on WIN11-LAB: process powershell.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000000401}",
+      "related_process_guids": ["{00000000-0000-0000-0000-000000000401}"],
+      "expected_verdict": "BENIGN",
+      "expected_techniques": []
+    }
+  ]
+}

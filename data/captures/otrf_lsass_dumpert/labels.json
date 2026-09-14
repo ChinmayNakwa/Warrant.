@@ -1,0 +1,36 @@
+{
+  "capture": "otrf_lsass_dumpert",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/credential_access/host/cmd_lsass_memory_dumpert_syscalls.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "lsass_dump_dumpert",
+      "description": "Real capture: Outflank-Dumpert.exe dumps LSASS memory with direct system calls and writes C:\\Windows\\Temp\\dumpert.dmp. No comsvcs or procdump command line.",
+      "alert_title": "Endpoint alert: Outflank-Dumpert.exe on WORKSTATION5",
+      "alert": "Alert on WORKSTATION5: process Outflank-Dumpert.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{39e4a257-004e-5f8d-4304-000000000700}",
+      "related_process_guids": [
+        "{39e4a257-004e-5f8d-4304-000000000700}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1003.001"
+      ],
+      "accepted_techniques": [
+        "T1106"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-201018225619",
+        "title": "Lsass Memory Dump via Syscalls",
+        "techniques": [
+          "T1003.001"
+        ]
+      },
+      "label_note": "T1106 accepted: the tool calls the kernel directly instead of the Win32 API."
+    }
+  ]
+}

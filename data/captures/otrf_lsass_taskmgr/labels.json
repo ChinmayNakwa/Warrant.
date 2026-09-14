@@ -1,0 +1,36 @@
+{
+  "capture": "otrf_lsass_taskmgr",
+  "provenance": {
+    "source": "OTRF/Security-Datasets (github.com/OTRF/Security-Datasets), MIT license",
+    "commit": "d9d40ef123d2c87d5d3df28c96bcab4f0faccc87",
+    "source_file": "datasets/atomic/windows/credential_access/host/rdp_interactive_taskmanager_lsass_dump.zip",
+    "converted_by": "scripts/fetch_otrf_capture.py"
+  },
+  "scenarios": [
+    {
+      "name": "lsass_dump_taskmgr",
+      "description": "Real capture: a user in an RDP session opens Task Manager and uses it to write lsass.DMP to their Temp folder. The file-create event is the only direct trace.",
+      "alert_title": "Endpoint alert: taskmgr.exe on WORKSTATION5.theshire.local",
+      "alert": "Alert on WORKSTATION5.theshire.local: process taskmgr.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{b34bc01c-b7f3-5f69-df02-000000000900}",
+      "related_process_guids": [
+        "{b34bc01c-b7f3-5f69-df02-000000000900}"
+      ],
+      "expected_verdict": "MALICIOUS",
+      "expected_techniques": [
+        "T1003.001"
+      ],
+      "accepted_techniques": [
+        "T1021.001"
+      ],
+      "otrf_metadata": {
+        "id": "SDWIN-191027055035",
+        "title": "RDP TaskManager LSASS Dump",
+        "techniques": [
+          "T1003.001"
+        ]
+      },
+      "label_note": "T1021.001 accepted: OTRF records the session as RDP; the kept events do not show the logon itself."
+    }
+  ]
+}

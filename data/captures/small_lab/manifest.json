@@ -1,0 +1,10 @@
+{
+  "name": "small_lab",
+  "host": "WIN11-LAB",
+  "scenario": "small_lab_mixed",
+  "synthetic": true,
+  "event_count": 13,
+  "starts_at": "2026-01-15T10:00:00",
+  "ends_at": "2026-01-15T10:20:00",
+  "notes": "Hand-written synthetic Sysmon JSON-lines. Event shapes follow real Sysmon EventID 1/3/11/13 fields. Three scenarios at small scale (a malicious PowerShell chain, credential access, a benign PowerShell session) plus benign background noise. Ground truth in labels.json."
+}
