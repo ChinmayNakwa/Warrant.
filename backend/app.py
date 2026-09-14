@@ -15,6 +15,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.config import get_settings
 from backend.routes import auth as auth_routes
+from backend.routes import captures as capture_routes
+from backend.routes import incidents as incident_routes
 
 logger = logging.getLogger("warrant")
 
@@ -44,6 +46,8 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(auth_routes.router)
+    app.include_router(capture_routes.router)
+    app.include_router(incident_routes.router)
 
     @app.get("/api/health", tags=["health"])
     def health() -> dict:

@@ -86,3 +86,27 @@ def user_factory(client: TestClient):
         }
 
     return _make
+
+
+def make_capture(db, name: str = "test_capture"):
+    from backend.models import Capture
+
+    capture = Capture(name=name, host="TEST-HOST")
+    db.add(capture)
+    db.flush()
+    return capture
+
+
+def make_incident(db, user_id: str, *, capture_id: str | None = None, **fields):
+    from backend.models import Incident
+
+    incident = Incident(
+        user_id=user_id,
+        title=fields.pop("title", "test incident"),
+        severity=fields.pop("severity", "medium"),
+        capture_id=capture_id or make_capture(db).id,
+        **fields,
+    )
+    db.add(incident)
+    db.flush()
+    return incident

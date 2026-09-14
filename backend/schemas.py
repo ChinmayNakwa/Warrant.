@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.config import get_settings
 
@@ -54,3 +55,46 @@ class UserResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     detail: str
+
+
+Severity = Literal["low", "medium", "high", "critical"]
+
+
+class CaptureResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    host: str
+    scenario: str | None
+    synthetic: bool
+    event_count: int
+
+
+class IncidentCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    title: str = Field(min_length=1, max_length=200)
+    description: str = Field(default="", max_length=5000)
+    severity: Severity = "medium"
+    capture_name: str = Field(min_length=1, max_length=200)
+    anchor_process_guid: str | None = Field(default=None, max_length=100)
+
+    @field_validator("anchor_process_guid")
+    @classmethod
+    def _blank_anchor_is_none(cls, v: str | None) -> str | None:
+        return v or None
+
+
+class IncidentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    title: str
+    description: str
+    severity: str
+    status: str
+    capture_id: str
+    anchor_process_guid: str | None
+    verdict: str | None
+    confidence: float | None
+    created_at: datetime

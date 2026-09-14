@@ -121,3 +121,32 @@ class Event(Base):
     dedupe_key: Mapped[str] = mapped_column(String, nullable=False)
 
     capture: Mapped[Capture] = relationship(back_populates="events")
+
+
+class Incident(Base):
+    """A user-filed incident. Runs belong to an incident, so everything is
+    reached through an incident its user owns."""
+
+    __tablename__ = "incidents"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str] = mapped_column(String, default="", nullable=False)
+    # low | medium | high | critical
+    severity: Mapped[str] = mapped_column(String, index=True, nullable=False)
+    # open | closed
+    status: Mapped[str] = mapped_column(String, index=True, default="open", nullable=False)
+    capture_id: Mapped[str] = mapped_column(
+        ForeignKey("captures.id", ondelete="RESTRICT"), nullable=False
+    )
+    # The process the alert fired on, if known
+    anchor_process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
+    # The latest completed run's verdict, copied here for lists and the dashboard
+    verdict: Mapped[str | None] = mapped_column(String, index=True, nullable=True)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # Set while a run of this incident is in progress
+    run_claimed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
