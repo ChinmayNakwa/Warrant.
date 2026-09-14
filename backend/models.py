@@ -150,3 +150,39 @@ class Incident(Base):
     # Set while a run of this incident is in progress
     run_claimed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+
+class GuardrailRun(Base):
+    """One model reading of an incident's telemetry."""
+
+    __tablename__ = "guardrail_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    incident_id: Mapped[str] = mapped_column(
+        ForeignKey("incidents.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    # baseline | guarded
+    mode: Mapped[str] = mapped_column(String, nullable=False)
+    # completed | failed (no usable answer; `note` says why)
+    status: Mapped[str] = mapped_column(String, nullable=False)
+    verdict: Mapped[str | None] = mapped_column(String, nullable=True)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # Name of the model that answered
+    model: Mapped[str] = mapped_column(String, nullable=False)
+    techniques_json: Mapped[str] = mapped_column(String, default="[]", nullable=False)
+    # The accepted answer. Baseline: the model's answer as given. Guarded:
+    # after repair and enforcement.
+    answer_json: Mapped[str | None] = mapped_column(String, nullable=True)
+    # The model's first answer and the rules it broke, recorded in both modes
+    first_answer_json: Mapped[str | None] = mapped_column(String, nullable=True)
+    violations_json: Mapped[str] = mapped_column(String, default="[]", nullable=False)
+    # Guarded only: repair rounds asked of the model, and what was then removed
+    repair_rounds: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    dropped_json: Mapped[str] = mapped_column(String, default="[]", nullable=False)
+    # The events the model read, with the refs its answer cites
+    slice_json: Mapped[str] = mapped_column(String, default="[]", nullable=False)
+    llm_calls: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # Why a run has no answer, or why repair stopped early
+    note: Mapped[str | None] = mapped_column(String, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

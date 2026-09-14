@@ -26,6 +26,24 @@ class Settings(BaseSettings):
     refresh_cookie_name: str = "warrant_refresh"
     cookie_secure: bool = False  # True in production over HTTPS
 
+    # The model, served by Ollama. Leave the model unset and runs answer 503.
+    # For Ollama's hosted API set the base URL to https://ollama.com and a key.
+    ollama_model: str | None = None
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_api_key: str | None = None
+    ollama_timeout_seconds: float = 300.0
+    # One reply carries the verdict, every technique and every claim, and the
+    # prompt carries the whole slice, so both limits are generous.
+    max_reply_tokens: int = 8192
+    ollama_num_ctx: int = 32768
+
+    # How much telemetry the model reads for one incident
+    max_slice_events: int = 120
+    slice_window_seconds: int = 120
+    # One run per incident at a time. A claim left behind by a server killed
+    # mid-run expires after this long.
+    run_claim_ttl_seconds: int = 15 * 60
+
     # CORS: the frontend's origin, comma-separated if there are several
     frontend_origin: str = "http://localhost:3000"
 

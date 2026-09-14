@@ -15,13 +15,16 @@ _TMP_DB = Path(tempfile.gettempdir()) / "warrant_test.db"
 if _TMP_DB.exists():
     _TMP_DB.unlink()
 
-# Environment variables win over .env, so a developer's own settings never
-# reach the tests.
+# Environment variables win over .env, so a developer's own settings (a real
+# model, a hosted API key) never reach the tests.
 os.environ["WARRANT_DATABASE_URL"] = f"sqlite:///{_TMP_DB.as_posix()}"
 os.environ["WARRANT_JWT_SECRET"] = "test-secret"
 os.environ["WARRANT_ACCESS_TOKEN_TTL_SECONDS"] = "900"
 os.environ["WARRANT_RATE_LIMIT_MAX_ATTEMPTS"] = "10"
 os.environ["WARRANT_RATE_LIMIT_WINDOW_SECONDS"] = "300"
+os.environ["WARRANT_OLLAMA_MODEL"] = ""
+os.environ["WARRANT_OLLAMA_API_KEY"] = ""
+os.environ["WARRANT_OLLAMA_BASE_URL"] = "http://localhost:11434"
 
 from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402

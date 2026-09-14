@@ -10,6 +10,8 @@ PROTECTED_GET_ROUTES = [
     "/api/captures",
     "/api/incidents",
     "/api/incidents/does-not-exist",
+    "/api/incidents/does-not-exist/guardrail-runs",
+    "/api/guardrail-runs/does-not-exist",
 ]
 
 
