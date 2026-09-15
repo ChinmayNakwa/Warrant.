@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. The neutrals match the chart colours in
+ * `components/charts/colors.ts`, so a chart's grid and a card's border are
+ * the same grey. One accent blue. Status colours live in `Badges.tsx` and
+ * `colors.ts`.
+ */
+:root {
+  --page: #f6f5f1;
+  --surface: #ffffff;
+  --surface-sunken: #efeee8;
+  --line: #e1e0d9;
+  --line-strong: #c3c2b7;
+  --ink: #1c1b19;
+  --ink-secondary: #52514e;
+  --ink-muted: #6b6a65;
+  --accent: #1f66bd;
+  --accent-soft: #e4eefb;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #121211;
+    --surface: #1a1a19;
+    --surface-sunken: #222220;
+    --line: #2c2c2a;
+    --line-strong: #383835;
+    --ink: #f1f0ea;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #9a988f;
+    --accent: #6aa6ee;
+    --accent-soft: #1b2b40;
+    --on-accent: #0f1620;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/*
+ * The sidebar (`components/Nav.tsx`) is fixed on wide screens. Pages render
+ * it themselves and only when signed in, so the page makes room for it here
+ * instead of every page carrying a layout wrapper.
+ */
+@media (min-width: 768px) {
+  body:has([data-app-nav]) {
+    padding-left: 15rem;
+  }
+}

@@ -6,6 +6,11 @@ venv/
 *.egg-info/
 .pytest_cache/
 
+# Node / Next
+node_modules/
+.next/
+out/
+
 # Data
 data/*.db
 # Evaluation results are generated; run backend.guardrail.evaluation to produce them
