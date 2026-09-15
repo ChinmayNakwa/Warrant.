@@ -166,3 +166,58 @@ export async function logout(): Promise<void> {
     setAccessToken(null);
   }
 }
+
+// --- Captures ---
+
+export interface Capture {
+  name: string;
+  host: string;
+  scenario: string | null;
+  synthetic: boolean;
+  event_count: number;
+}
+
+export function listCaptures(): Promise<Capture[]> {
+  return apiFetch<Capture[]>("/api/captures");
+}
+
+// --- Incidents ---
+
+export type Severity = "low" | "medium" | "high" | "critical";
+export type Verdict = "MALICIOUS" | "SUSPICIOUS" | "BENIGN" | "INSUFFICIENT_EVIDENCE";
+
+export interface Incident {
+  id: string;
+  title: string;
+  description: string;
+  severity: Severity;
+  status: string;
+  capture_id: string;
+  anchor_process_guid: string | null;
+  verdict: Verdict | null;
+  confidence: number | null;
+  created_at: string;
+}
+
+export interface IncidentCreatePayload {
+  title: string;
+  description?: string;
+  severity: Severity;
+  capture_name: string;
+  anchor_process_guid?: string | null;
+}
+
+export function listIncidents(): Promise<Incident[]> {
+  return apiFetch<Incident[]>("/api/incidents");
+}
+
+export function createIncident(payload: IncidentCreatePayload): Promise<Incident> {
+  return apiFetch<Incident>("/api/incidents", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getIncident(incidentId: string): Promise<Incident> {
+  return apiFetch<Incident>(`/api/incidents/${incidentId}`);
+}
