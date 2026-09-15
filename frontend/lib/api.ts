@@ -388,3 +388,20 @@ export async function getEvaluationResults(): Promise<EvaluationResults[]> {
   const body = await apiFetch<{ results: EvaluationResults[] }>("/api/evaluation/results");
   return body.results;
 }
+
+// --- Dashboard ---
+
+export interface DashboardSummary {
+  open_incidents: number;
+  total_runs: number;
+  /** Runs whose first answer broke at least one rule. */
+  runs_with_violations: number;
+  verdict_breakdown: Record<string, number>;
+  severity_breakdown: Record<string, number>;
+  runs_over_time: { date: string; count: number }[];
+  recent_incidents: Incident[];
+}
+
+export function getDashboardSummary(): Promise<DashboardSummary> {
+  return apiFetch<DashboardSummary>("/api/dashboard/summary");
+}

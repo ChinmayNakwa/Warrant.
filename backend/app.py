@@ -17,6 +17,7 @@ from backend.config import get_settings
 from backend.guardrail import routes as guardrail_routes
 from backend.routes import auth as auth_routes
 from backend.routes import captures as capture_routes
+from backend.routes import dashboard as dashboard_routes
 from backend.routes import evaluation as evaluation_routes
 from backend.routes import incidents as incident_routes
 
@@ -51,6 +52,7 @@ def create_app() -> FastAPI:
     app.include_router(capture_routes.router)
     app.include_router(incident_routes.router)
     app.include_router(guardrail_routes.router)
+    app.include_router(dashboard_routes.router)
     app.include_router(evaluation_routes.router)
 
     @app.get("/api/health", tags=["health"])

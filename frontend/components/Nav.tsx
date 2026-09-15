@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 
 const LINKS = [
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/incidents", label: "Incidents" },
   { href: "/evaluation", label: "Evaluation" },
 ];

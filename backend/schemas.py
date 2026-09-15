@@ -98,3 +98,16 @@ class IncidentResponse(BaseModel):
     verdict: str | None
     confidence: float | None
     created_at: datetime
+
+
+class DashboardSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    open_incidents: int
+    total_runs: int
+    # Runs whose first answer broke at least one rule
+    runs_with_violations: int
+    verdict_breakdown: dict[str, int]
+    severity_breakdown: dict[str, int]
+    runs_over_time: list[dict]
+    recent_incidents: list[IncidentResponse]

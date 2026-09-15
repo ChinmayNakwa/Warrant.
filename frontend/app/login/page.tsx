@@ -22,7 +22,7 @@ function LoginForm() {
     setSubmitting(true);
     try {
       await login(email, password);
-      router.push(searchParams.get("from") || "/incidents");
+      router.push(searchParams.get("from") || "/dashboard");
     } catch (err) {
       // The backend's message is generic on purpose: it never says which field was wrong.
       setError(err instanceof ApiError ? err.detail : "Something went wrong. Please try again.");

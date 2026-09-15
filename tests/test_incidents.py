@@ -14,6 +14,7 @@ PROTECTED_GET_ROUTES = [
     "/api/incidents/does-not-exist",
     "/api/incidents/does-not-exist/guardrail-runs",
     "/api/guardrail-runs/does-not-exist",
+    "/api/dashboard/summary",
     "/api/evaluation/results",
 ]
 

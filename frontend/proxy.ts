@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { SESSION_HINT_COOKIE } from "./lib/session-hint";
 
-const PROTECTED_PREFIXES = ["/incidents", "/evaluation"];
+const PROTECTED_PREFIXES = ["/dashboard", "/incidents", "/evaluation"];
 const AUTH_PAGES = ["/login", "/signup"];
 
 export function proxy(request: NextRequest) {
@@ -22,7 +22,7 @@ export function proxy(request: NextRequest) {
   const isAuthPage = AUTH_PAGES.some((p) => pathname === p);
   if (isAuthPage && hasSessionHint) {
     const url = request.nextUrl.clone();
-    url.pathname = "/incidents";
+    url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -32,6 +32,7 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/dashboard/:path*",
     "/incidents/:path*",
     "/evaluation/:path*",
     "/login",
