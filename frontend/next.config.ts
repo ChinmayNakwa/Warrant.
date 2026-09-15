@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: "bottom-right",
   },
+  // Stops `next dev` writing its own guidance files into this directory.
+  agentRules: false,
 };
 
 export default nextConfig;
