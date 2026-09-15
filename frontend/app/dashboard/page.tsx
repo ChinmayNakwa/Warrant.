@@ -135,7 +135,7 @@ export default function DashboardPage() {
               <SeverityBarChart breakdown={summary.severity_breakdown} />
             </div>
             <div className="rounded-xl border border-line bg-surface p-5 lg:col-span-2">
-              <h2 className="mb-3 text-sm font-medium text-ink">Runs, last 30 days</h2>
+              <h2 className="mb-3 text-sm font-medium text-ink">Runs, last 30 days (UTC)</h2>
               {summary.runs_over_time.length > 0 ? (
                 <RunsLineChart data={summary.runs_over_time} />
               ) : (

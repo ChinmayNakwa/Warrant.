@@ -9,7 +9,6 @@ A run is reachable only through an incident the caller owns; anything else is 40
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from typing import Callable
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -25,6 +24,7 @@ from backend.incidents import IncidentNotFound, claim_run, get_owned_incident, r
 from backend.llm import Completer, NoModelConfigured, ollama_completer
 from backend.models import GuardrailRun, Incident, User
 from backend.routes.incidents import NOT_FOUND as INCIDENT_NOT_FOUND
+from backend.schemas import UtcDatetime
 
 router = APIRouter(prefix="/api", tags=["guardrail"])
 
@@ -58,8 +58,8 @@ class RunSummary(BaseModel):
     repair_rounds: int
     dropped_count: int
     note: str | None
-    started_at: datetime
-    finished_at: datetime | None
+    started_at: UtcDatetime
+    finished_at: UtcDatetime | None
 
 
 class RunDetail(RunSummary):

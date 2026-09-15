@@ -2,15 +2,19 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
-from typing import Literal
+from datetime import datetime, timezone
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.config import get_settings
 
 _HAS_LETTER = re.compile(r"[A-Za-z]")
 _HAS_DIGIT = re.compile(r"\d")
+
+# Times are stored as UTC with no zone. This marks them as UTC in responses,
+# so a browser does not read them as local time.
+UtcDatetime = Annotated[datetime, AfterValidator(lambda v: v.replace(tzinfo=timezone.utc))]
 
 
 class RegisterRequest(BaseModel):
@@ -50,7 +54,7 @@ class UserResponse(BaseModel):
 
     id: str
     email: str
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class MessageResponse(BaseModel):
@@ -97,7 +101,7 @@ class IncidentResponse(BaseModel):
     anchor_process_guid: str | None
     verdict: str | None
     confidence: float | None
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class DashboardSummary(BaseModel):

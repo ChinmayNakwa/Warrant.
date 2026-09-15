@@ -9,7 +9,7 @@ def test_register_returns_user_without_tokens(client):
     assert r.status_code == 201
     body = r.json()
     assert body["email"] == "alice@example.com"
-    assert "id" in body and "created_at" in body
+    assert "id" in body and body["created_at"].endswith("Z")
     assert "password" not in body and "password_hash" not in body
     assert "access_token" not in body
 

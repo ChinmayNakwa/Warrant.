@@ -325,6 +325,7 @@ def test_api_run_list_and_get(client, user_factory, lab, scripted):
     assert (body["mode"], body["verdict"], body["techniques"]) == ("baseline", "MALICIOUS", ["T1059.001"])
     assert body["answer"]["claims"][0]["event"] == "e5"
     assert len(body["events"]) == 5
+    assert body["started_at"].endswith("Z") and body["finished_at"].endswith("Z")
     listed = client.get(f"/api/incidents/{incident_id}/guardrail-runs", headers=_auth(user)).json()
     assert [r["id"] for r in listed] == [body["id"]]
     assert client.get(f"/api/guardrail-runs/{body['id']}", headers=_auth(user)).json() == body
