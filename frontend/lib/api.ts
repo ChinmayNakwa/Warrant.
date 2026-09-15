@@ -312,3 +312,79 @@ export function createRun(incidentId: string, mode: RunMode): Promise<RunDetail>
     body: JSON.stringify({ mode }),
   });
 }
+
+// --- Evaluation ---
+
+/** `stdev` is null when there was one repeat: no spread to report. */
+export interface Spread {
+  mean: number;
+  stdev: number | null;
+}
+
+export interface EvaluationScenario {
+  capture: string;
+  scenario: string;
+  expected_verdict: string;
+  expected_techniques: string[];
+  /** One entry per repeat, in repeat order. */
+  verdicts: string[];
+  verdicts_correct: boolean[];
+  techniques: string[][];
+  verdict_correct_rate: number;
+  precision: number;
+  recall: number;
+}
+
+/** One mode's scores over every scenario. */
+export interface EvaluationArm {
+  precision: Spread;
+  recall: Spread;
+  verdict_accuracy: Spread;
+  detection_rate: Spread | null;
+  benign_discrimination: boolean;
+  scenarios: EvaluationScenario[];
+}
+
+export interface GroundingCounts {
+  claims: number;
+  conforming_claims: number;
+  claims_conformance: number | null;
+  techniques: number;
+  conforming_techniques: number;
+  techniques_conformance: number | null;
+}
+
+export interface Tally {
+  better: number;
+  worse: number;
+  same: number;
+}
+
+/** One model's evaluation: every scenario run guarded, scored both ways. */
+export interface EvaluationResults {
+  generated_at: string;
+  model: string;
+  repeats: number;
+  repeats_done: number;
+  /** False while the evaluation that writes the file is still running. */
+  complete: boolean;
+  arms: { baseline: EvaluationArm; guarded: EvaluationArm };
+  guardrail: {
+    runs: number;
+    failed_runs: number;
+    runs_with_violations: number;
+    violations: number;
+    violations_by_code: Record<string, number>;
+    runs_fully_repaired: number;
+    runs_enforced: number;
+    answers_changed: number;
+    verdicts_changed: number;
+  };
+  grounding: { baseline: GroundingCounts; guarded: GroundingCounts };
+  paired: { precision: Tally; recall: Tally; verdict: Tally };
+}
+
+export async function getEvaluationResults(): Promise<EvaluationResults[]> {
+  const body = await apiFetch<{ results: EvaluationResults[] }>("/api/evaluation/results");
+  return body.results;
+}

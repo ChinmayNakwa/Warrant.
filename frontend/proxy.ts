@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { SESSION_HINT_COOKIE } from "./lib/session-hint";
 
-const PROTECTED_PREFIXES = ["/incidents"];
+const PROTECTED_PREFIXES = ["/incidents", "/evaluation"];
 const AUTH_PAGES = ["/login", "/signup"];
 
 export function proxy(request: NextRequest) {
@@ -33,6 +33,7 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/incidents/:path*",
+    "/evaluation/:path*",
     "/login",
     "/signup",
   ],
