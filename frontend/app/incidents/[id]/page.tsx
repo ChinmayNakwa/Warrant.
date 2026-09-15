@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { ClaimGraph } from "@/components/ClaimGraph";
 import { Nav } from "@/components/Nav";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
 import {
@@ -105,7 +106,7 @@ function CheckResult({ run }: { run: RunDetail }) {
   );
 }
 
-function RunView({ run }: { run: RunDetail }) {
+function RunView({ run, anchorGuid }: { run: RunDetail; anchorGuid: string | null }) {
   return (
     <div className="flex flex-col gap-4">
       <section className={CARD}>
@@ -131,7 +132,15 @@ function RunView({ run }: { run: RunDetail }) {
       {run.answer && (
         <section className={CARD}>
           <h3 className={HEADING}>Accepted answer</h3>
-          <AnswerBody answer={run.answer} />
+          <div className="flex flex-col gap-4">
+            <ClaimGraph
+              claims={run.answer.claims}
+              dropped={run.dropped}
+              events={run.events}
+              anchorGuid={anchorGuid}
+            />
+            <AnswerBody answer={run.answer} />
+          </div>
         </section>
       )}
 
@@ -288,7 +297,7 @@ export default function IncidentDetailPage() {
             )}
 
             {selectedRun ? (
-              <RunView run={selectedRun} />
+              <RunView run={selectedRun} anchorGuid={incident.anchor_process_guid} />
             ) : (
               <p className="text-sm text-ink-muted">No runs yet. Pick a mode and run one above.</p>
             )}

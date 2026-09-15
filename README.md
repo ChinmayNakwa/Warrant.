@@ -86,8 +86,8 @@ With no model set, everything works except starting a run, which answers
 
 Sign up, open **Incidents**, and file one against a capture. On the incident's
 page pick a mode and run it. The page shows the verdict, what the check found
-in the model's first answer, what guarded mode removed, the accepted answer,
-and the events the model read.
+in the model's first answer, what guarded mode removed, the accepted answer
+with its claims drawn as a graph, and the events the model read.
 
 **Dashboard** counts your incidents and runs. **Evaluation** shows baseline
 against guarded for each model that has been evaluated.
