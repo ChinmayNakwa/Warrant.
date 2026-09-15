@@ -221,3 +221,94 @@ export function createIncident(payload: IncidentCreatePayload): Promise<Incident
 export function getIncident(incidentId: string): Promise<Incident> {
   return apiFetch<Incident>(`/api/incidents/${incidentId}`);
 }
+
+// --- Runs ---
+
+export type RunMode = "baseline" | "guarded";
+
+export interface RunSummary {
+  id: string;
+  incident_id: string;
+  mode: RunMode;
+  /** "completed", or "failed" when the model gave no usable answer. */
+  status: string;
+  verdict: Verdict | null;
+  confidence: number | null;
+  model: string;
+  techniques: string[];
+  llm_calls: number;
+  /** Rules the model's first answer broke. */
+  violation_count: number;
+  repair_rounds: number;
+  dropped_count: number;
+  note: string | null;
+  started_at: string;
+  finished_at: string | null;
+}
+
+export interface TechniqueClaim {
+  id: string;
+  events: string[];
+}
+
+export interface Claim {
+  subject_type: string;
+  subject: string;
+  relation: string;
+  object_type: string;
+  object: string;
+  event: string;
+}
+
+export interface Answer {
+  verdict: Verdict;
+  confidence: number;
+  techniques: TechniqueClaim[];
+  claims: Claim[];
+  summary: string;
+}
+
+export interface Violation {
+  /** The rule's name, e.g. "technique_unknown". */
+  code: string;
+  /** Where in the answer: "techniques[0]", "claims[2]" or "verdict". */
+  path: string;
+  message: string;
+}
+
+/** Something guarded mode removed or changed, and the rules it broke. */
+export interface Dropped {
+  kind: "technique" | "claim" | "verdict";
+  item: Record<string, unknown>;
+  codes: string[];
+}
+
+export interface TelemetryEvent {
+  ref: string;
+  ts: string;
+  event_type: string;
+  [field: string]: unknown;
+}
+
+export interface RunDetail extends RunSummary {
+  answer: Answer | null;
+  first_answer: Answer | null;
+  violations: Violation[];
+  dropped: Dropped[];
+  events: TelemetryEvent[];
+}
+
+export function listRuns(incidentId: string): Promise<RunSummary[]> {
+  return apiFetch<RunSummary[]>(`/api/incidents/${incidentId}/guardrail-runs`);
+}
+
+export function getRun(runId: string): Promise<RunDetail> {
+  return apiFetch<RunDetail>(`/api/guardrail-runs/${runId}`);
+}
+
+export function createRun(incidentId: string, mode: RunMode): Promise<RunDetail> {
+  return apiFetch<RunDetail>(`/api/incidents/${incidentId}/guardrail-runs`, {
+    method: "POST",
+    body: JSON.stringify({ mode }),
+  });
+}
