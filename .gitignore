@@ -8,6 +8,8 @@ venv/
 
 # Data
 data/*.db
+# Evaluation results are generated; run backend.guardrail.evaluation to produce them
+data/evaluation/
 
 # Scratch space for downloads and extracts
 tmp/

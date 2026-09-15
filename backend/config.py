@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     # mid-run expires after this long.
     run_claim_ttl_seconds: int = 15 * 60
 
+    evaluation_dir: str = "data/evaluation"
+
     # CORS: the frontend's origin, comma-separated if there are several
     frontend_origin: str = "http://localhost:3000"
 

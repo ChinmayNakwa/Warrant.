@@ -1,7 +1,9 @@
-"""Incident and capture routes: auth, ownership, and what they return."""
+"""Incident, capture and evaluation routes: auth, ownership, and what they return."""
 from __future__ import annotations
 
+import json
 
+from backend.config import get_settings
 from backend.database import SessionLocal
 from tests.conftest import auth, make_capture, make_incident
 
@@ -12,6 +14,7 @@ PROTECTED_GET_ROUTES = [
     "/api/incidents/does-not-exist",
     "/api/incidents/does-not-exist/guardrail-runs",
     "/api/guardrail-runs/does-not-exist",
+    "/api/evaluation/results",
 ]
 
 
@@ -82,3 +85,18 @@ def test_another_users_incident_looks_missing(client, user_factory):
     assert missing.status_code == forbidden.status_code == 404
     assert missing.json() == forbidden.json()
     assert client.get("/api/incidents", headers=headers).json() == []
+
+
+def test_evaluation_results_are_the_files_as_written(client, user_factory, tmp_path, monkeypatch):
+    user = user_factory("evaluation@example.com")
+    headers = auth(user["access_token"])
+    monkeypatch.setattr(get_settings(), "evaluation_dir", str(tmp_path))
+
+    assert client.get("/api/evaluation/results", headers=headers).json() == {"results": []}
+
+    (tmp_path / "results_b.json").write_text(json.dumps({"model": "b"}), encoding="utf-8")
+    (tmp_path / "results_a.json").write_text(json.dumps({"model": "a"}), encoding="utf-8")
+    (tmp_path / "results_half-written.json").write_text('{"model": ', encoding="utf-8")
+
+    body = client.get("/api/evaluation/results", headers=headers).json()
+    assert body == {"results": [{"model": "a"}, {"model": "b"}]}
