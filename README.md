@@ -13,6 +13,12 @@ It runs every case two ways so the effect can be measured:
   twice), removes what still fails, and changes the verdict if what is left no
   longer supports it.
 
+![Warrant landing page](docs/screenshots/landing.png)
+
+![An answer's claims drawn as a graph, with a removed claim dashed](docs/screenshots/landing-graph.png)
+
+![A guarded run on an incident page](docs/screenshots/run-page.png)
+
 ## How it works
 
 1. You file an incident against a *capture*: a recording of Windows Sysmon
