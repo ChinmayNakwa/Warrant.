@@ -69,6 +69,24 @@ body {
   }
 }
 
+/* Tooltips (`components/Hint.tsx`) fade in from just below where they end up. */
+.hint {
+  animation: hint-in 140ms ease-out;
+}
+
+@keyframes hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    animation: none;
+  }
+}
+
 /* The faint dotted backdrop behind the landing page's hero, fading out downwards. */
 .hero-grid {
   background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);

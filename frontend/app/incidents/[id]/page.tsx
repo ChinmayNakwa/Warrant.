@@ -1,11 +1,15 @@
 "use client";
 
+import { LoaderCircle, Play } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ClaimGraph } from "@/components/ClaimGraph";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
+import { Hint } from "@/components/Hint";
+import { Skeleton, Stagger, StaggerItem } from "@/components/motion";
 import {
   ApiError,
   type Answer,
@@ -108,8 +112,8 @@ function CheckResult({ run }: { run: RunDetail }) {
 
 function RunView({ run, anchorGuid }: { run: RunDetail; anchorGuid: string | null }) {
   return (
-    <div className="flex flex-col gap-4">
-      <section className={CARD}>
+    <Stagger className="flex flex-col gap-4">
+      <StaggerItem className={CARD}>
         <div className="flex flex-wrap items-center gap-3 text-sm text-ink-muted">
           <VerdictBadge verdict={run.verdict} />
           {run.confidence !== null && <span>confidence {run.confidence.toFixed(2)}</span>}
@@ -120,17 +124,17 @@ function RunView({ run, anchorGuid }: { run: RunDetail; anchorGuid: string | nul
           </span>
         </div>
         {run.note && <p className="mt-3 text-sm text-ink-secondary">{run.note}</p>}
-      </section>
+      </StaggerItem>
 
       {run.first_answer && (
-        <section className={CARD}>
+        <StaggerItem className={CARD}>
           <h3 className={HEADING}>Check</h3>
           <CheckResult run={run} />
-        </section>
+        </StaggerItem>
       )}
 
       {run.answer && (
-        <section className={CARD}>
+        <StaggerItem className={CARD}>
           <h3 className={HEADING}>Accepted answer</h3>
           <div className="flex flex-col gap-4">
             <ClaimGraph
@@ -141,31 +145,35 @@ function RunView({ run, anchorGuid }: { run: RunDetail; anchorGuid: string | nul
             />
             <AnswerBody answer={run.answer} />
           </div>
-        </section>
+        </StaggerItem>
       )}
 
       {run.first_answer && run.mode === "guarded" && run.violations.length > 0 && (
-        <details className={CARD}>
-          <summary className="cursor-pointer text-sm font-medium text-ink">First answer, before the check</summary>
-          <div className="mt-4">
-            <AnswerBody answer={run.first_answer} />
-          </div>
-        </details>
+        <StaggerItem>
+          <details className={CARD}>
+            <summary className="cursor-pointer text-sm font-medium text-ink">First answer, before the check</summary>
+            <div className="mt-4">
+              <AnswerBody answer={run.first_answer} />
+            </div>
+          </details>
+        </StaggerItem>
       )}
 
-      <details className={CARD}>
-        <summary className="cursor-pointer text-sm font-medium text-ink">
-          Telemetry the model read ({run.events.length} events)
-        </summary>
-        <ul className="mt-4 flex flex-col gap-2">
-          {run.events.map((event) => (
-            <li key={event.ref} className="rounded-md border border-line p-2">
-              <pre className="overflow-x-auto text-xs text-ink-muted">{JSON.stringify(event, null, 2)}</pre>
-            </li>
-          ))}
-        </ul>
-      </details>
-    </div>
+      <StaggerItem>
+        <details className={CARD}>
+          <summary className="cursor-pointer text-sm font-medium text-ink">
+            Telemetry the model read ({run.events.length} events)
+          </summary>
+          <ul className="mt-4 flex flex-col gap-2">
+            {run.events.map((event) => (
+              <li key={event.ref} className="rounded-md border border-line p-2">
+                <pre className="overflow-x-auto text-xs text-ink-muted">{JSON.stringify(event, null, 2)}</pre>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </StaggerItem>
+    </Stagger>
   );
 }
 
@@ -237,7 +245,14 @@ export default function IncidentDetailPage() {
             {error}
           </p>
         )}
-        {!incident && !error && <p className="text-sm text-ink-muted">Loading…</p>}
+        {!incident && !error && (
+          <div role="status" className="flex flex-col gap-6">
+            <span className="sr-only">Loading…</span>
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-24 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
+        )}
         {incident && (
           <>
             <PageHeader title={incident.title} description={incident.description || undefined}>
@@ -264,32 +279,65 @@ export default function IncidentDetailPage() {
               <button
                 onClick={handleRun}
                 disabled={running}
-                className="ml-auto h-10 rounded-md bg-accent px-5 text-sm font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="ml-auto inline-flex h-10 items-center gap-2 rounded-md bg-accent px-5 text-sm font-medium text-on-accent transition hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
               >
+                {running ? (
+                  <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
+                ) : (
+                  <Play aria-hidden="true" className="size-4" />
+                )}
                 {running ? "Running…" : "Run analysis"}
               </button>
             </section>
 
+            <AnimatePresence>
+              {running && (
+                <motion.p
+                  role="status"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden text-sm text-ink-muted"
+                >
+                  Waiting for the model. The page updates when the run finishes.
+                </motion.p>
+              )}
+            </AnimatePresence>
+
             {runs.length > 1 && (
               <div className="flex flex-wrap gap-2">
-                {runs.map((r) => (
-                  <button
-                    key={r.id}
-                    onClick={() => selectRun(r.id)}
-                    className={
-                      selectedRun?.id === r.id
-                        ? "rounded-md bg-accent-soft px-3 py-1 text-xs font-medium text-accent"
-                        : "rounded-md border border-line px-3 py-1 text-xs text-ink-secondary hover:bg-sunken"
-                    }
-                  >
-                    {r.mode} · {new Date(r.started_at).toLocaleString()}
-                  </button>
-                ))}
+                {runs.map((r) => {
+                  const selected = selectedRun?.id === r.id;
+                  return (
+                    <Hint key={r.id} text={MODES.find((m) => m.mode === r.mode)?.hint ?? r.mode}>
+                      <button
+                        onClick={() => selectRun(r.id)}
+                        aria-pressed={selected}
+                        className={`relative rounded-md border px-3 py-1 text-xs transition-colors ${
+                          selected
+                            ? "border-transparent font-medium text-accent"
+                            : "border-line text-ink-secondary hover:bg-sunken"
+                        }`}
+                      >
+                        {selected && (
+                          <motion.span
+                            layoutId="run-active"
+                            className="absolute inset-0 rounded-md bg-accent-soft"
+                            transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                          />
+                        )}
+                        <span className="relative">
+                          {r.mode} · {new Date(r.started_at).toLocaleString()}
+                        </span>
+                      </button>
+                    </Hint>
+                  );
+                })}
               </div>
             )}
 
             {selectedRun ? (
-              <RunView run={selectedRun} anchorGuid={incident.anchor_process_guid} />
+              <RunView key={selectedRun.id} run={selectedRun} anchorGuid={incident.anchor_process_guid} />
             ) : (
               <p className="text-sm text-ink-muted">No runs yet. Pick a mode and run one above.</p>
             )}

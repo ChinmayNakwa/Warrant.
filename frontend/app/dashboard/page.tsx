@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
+import { Hint } from "@/components/Hint";
 import { Reveal, Skeleton, Stagger, StaggerItem } from "@/components/motion";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { RunsLineChart } from "@/components/charts/RunsLineChart";
@@ -46,7 +47,9 @@ function RecentIncidentsTable({ incidents }: { incidents: DashboardSummary["rece
               <VerdictBadge verdict={incident.verdict as Verdict | null} />
             </td>
             <td className="px-5 py-3 tabular-nums text-ink-muted">
-              {new Date(incident.created_at).toLocaleDateString()}
+              <Hint text={new Date(incident.created_at).toLocaleString()}>
+                {new Date(incident.created_at).toLocaleDateString()}
+              </Hint>
             </td>
           </tr>
         ))}

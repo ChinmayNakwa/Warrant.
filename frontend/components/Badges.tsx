@@ -1,3 +1,4 @@
+import { Hint } from "@/components/Hint";
 import type { Severity, Verdict } from "@/lib/api";
 
 const SEVERITY_CLASSES: Record<Severity, string> = {
@@ -30,7 +31,11 @@ export function SeverityBadge({ severity }: { severity: Severity }) {
 
 export function VerdictBadge({ verdict }: { verdict: Verdict | null }) {
   if (!verdict) {
-    return <Pill text="pending" className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400" />;
+    return (
+      <Hint text="No run has given a verdict yet.">
+        <Pill text="pending" className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400" />
+      </Hint>
+    );
   }
   return <Pill text={verdict.replace("_", " ")} className={VERDICT_CLASSES[verdict]} />;
 }

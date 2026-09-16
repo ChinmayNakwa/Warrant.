@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Hint } from "@/components/Hint";
 import { useAuth } from "@/lib/auth";
 
 const LINKS: { href: string; label: string; icon: LucideIcon }[] = [
@@ -65,9 +66,9 @@ export function Nav() {
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-line px-5 py-3 md:flex-col md:items-start md:gap-2 md:py-4">
-        <span className="truncate text-xs text-ink-muted md:w-full" title={user.email}>
-          {user.email}
-        </span>
+        <Hint text={user.email} className="md:w-full">
+          <span className="truncate text-xs text-ink-muted">{user.email}</span>
+        </Hint>
         <button
           onClick={() => logout()}
           className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink"

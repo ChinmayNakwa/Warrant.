@@ -1,11 +1,14 @@
 "use client";
 
+import { ChevronRight, Inbox, LoaderCircle } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
-import { PageHeader, PageShell } from "@/components/PageShell";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
+import { PageHeader, PageShell } from "@/components/PageShell";
+import { Skeleton, Stagger, StaggerItem } from "@/components/motion";
 import {
   ApiError,
   type Capture,
@@ -19,37 +22,45 @@ import { useRequireAuth } from "@/lib/useRequireAuth";
 
 const SEVERITIES: Severity[] = ["low", "medium", "high", "critical"];
 
+const FIELD =
+  "rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none transition-shadow focus:border-accent focus:ring-2 focus:ring-accent-soft";
+
 function IncidentList({ incidents }: { incidents: Incident[] }) {
   if (incidents.length === 0) {
     return (
-      <p className="text-sm text-ink-muted">
-        No incidents yet. File one with the form on the right.
-      </p>
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line-strong px-6 py-12 text-center">
+        <Inbox aria-hidden="true" className="size-6 text-ink-muted" />
+        <p className="text-sm text-ink-muted">No incidents yet. File one with the form on the right.</p>
+      </div>
     );
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <Stagger as="ul" className="flex flex-col gap-2">
       {incidents.map((incident) => (
-        <li key={incident.id}>
+        <StaggerItem as="li" key={incident.id}>
           <Link
             href={`/incidents/${incident.id}`}
-            className="flex items-center justify-between rounded-lg border border-line bg-surface px-4 py-3 transition-colors hover:border-line-strong"
+            className="group flex items-center justify-between gap-3 rounded-lg border border-line bg-surface px-4 py-3 transition-colors hover:border-line-strong"
           >
-            <div className="flex flex-col gap-1">
-              <span className="font-medium text-ink">{incident.title}</span>
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="truncate font-medium text-ink">{incident.title}</span>
               <span className="text-xs text-ink-muted">
                 {new Date(incident.created_at).toLocaleString()}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <SeverityBadge severity={incident.severity} />
               <VerdictBadge verdict={incident.verdict} />
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 text-ink-muted transition-transform group-hover:translate-x-0.5"
+              />
             </div>
           </Link>
-        </li>
+        </StaggerItem>
       ))}
-    </ul>
+    </Stagger>
   );
 }
 
@@ -112,27 +123,27 @@ export default function IncidentsPage() {
     <div className="flex flex-1 flex-col">
       <PageShell>
         <PageHeader title="Incidents" description="Every incident you have filed, newest first." />
-        <div className="flex flex-col gap-8 sm:flex-row">
-          <section className="flex-1">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
+          <section className="min-w-0 flex-1">
             {loadError && <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>}
             {incidents === null && !loadError ? (
-              <p className="text-sm text-ink-muted">Loading…</p>
+              <div role="status" className="flex flex-col gap-2">
+                <span className="sr-only">Loading…</span>
+                <Skeleton className="h-16 rounded-lg" />
+                <Skeleton className="h-16 rounded-lg" />
+                <Skeleton className="h-16 rounded-lg" />
+              </div>
             ) : (
               <IncidentList incidents={incidents ?? []} />
             )}
           </section>
 
-          <section className="w-full sm:w-80">
-            <h2 className="mb-4 text-lg font-semibold text-ink">File an incident</h2>
+          <section className="w-full rounded-xl border border-line bg-surface p-5 sm:w-80">
+            <h2 className="mb-4 text-base font-semibold text-ink">File an incident</h2>
             <form onSubmit={handleCreate} className="flex flex-col gap-3">
               <label className="flex flex-col gap-1 text-sm text-ink-secondary">
                 Title
-                <input
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-                />
+                <input required value={title} onChange={(e) => setTitle(e.target.value)} className={FIELD} />
               </label>
               <label className="flex flex-col gap-1 text-sm text-ink-secondary">
                 Description
@@ -140,7 +151,7 @@ export default function IncidentsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                  className={FIELD}
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-ink-secondary">
@@ -148,7 +159,7 @@ export default function IncidentsPage() {
                 <select
                   value={severity}
                   onChange={(e) => setSeverity(e.target.value as Severity)}
-                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                  className={FIELD}
                 >
                   {SEVERITIES.map((s) => (
                     <option key={s} value={s}>
@@ -163,7 +174,7 @@ export default function IncidentsPage() {
                   required
                   value={captureName}
                   onChange={(e) => setCaptureName(e.target.value)}
-                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                  className={FIELD}
                 >
                   {captures.length === 0 && <option value="">No captures available</option>}
                   {captures.map((c) => (
@@ -179,19 +190,29 @@ export default function IncidentsPage() {
                   value={anchorGuid}
                   onChange={(e) => setAnchorGuid(e.target.value)}
                   placeholder="leave blank to use the rarest events"
-                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                  className={FIELD}
                 />
               </label>
-              {formError && (
-                <p data-testid="form-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
-                  {formError}
-                </p>
-              )}
+              <AnimatePresence>
+                {formError && (
+                  <motion.p
+                    data-testid="form-error"
+                    role="alert"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden text-sm text-red-600 dark:text-red-400"
+                  >
+                    {formError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
               <button
                 type="submit"
                 disabled={submitting || captures.length === 0}
-                className="mt-2 h-11 rounded-md bg-accent font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="mt-2 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent font-medium text-on-accent transition hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
               >
+                {submitting && <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />}
                 {submitting ? "Filing…" : "File incident"}
               </button>
             </form>
