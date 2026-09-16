@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { AuthCard } from "@/components/AuthCard";
+import { FIELD, FormError, PasswordField, SubmitButton } from "@/components/forms";
 import { ApiError, useAuth } from "@/lib/auth";
 
 export default function SignupPage() {
@@ -30,55 +32,40 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-6 text-2xl font-semibold text-ink">Sign up</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-            Email
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-            Password
-            <input
-              type="password"
-              required
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-            />
-            <span className="text-xs text-ink-muted">
-              At least 10 characters, with a letter and a digit.
-            </span>
-          </label>
-          {error && (
-            <p data-testid="form-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
-              {error}
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 h-11 rounded-md bg-accent font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
-          >
-            {submitting ? "Creating account…" : "Sign up"}
-          </button>
-        </form>
-        <p className="mt-6 text-sm text-ink-muted">
+    <AuthCard
+      title="Sign up"
+      footer={
+        <>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-accent underline">
+          <Link href="/login" className="font-medium text-accent underline-offset-4 hover:underline">
             Log in
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+          Email
+          <input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={FIELD}
+          />
+        </label>
+        <PasswordField
+          value={password}
+          onChange={setPassword}
+          autoComplete="new-password"
+          hint="At least 10 characters, with a letter and a digit."
+        />
+        <FormError message={error} />
+        <SubmitButton busy={submitting} busyLabel="Creating account…">
+          Sign up
+        </SubmitButton>
+      </form>
+    </AuthCard>
   );
 }

@@ -4,6 +4,7 @@ import { FlaskConical, FolderSearch, LayoutDashboard, LogOut, type LucideIcon } 
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 import { Hint } from "@/components/Hint";
 import { useAuth } from "@/lib/auth";
@@ -70,7 +71,10 @@ export function Nav() {
           <span className="truncate text-xs text-ink-muted">{user.email}</span>
         </Hint>
         <button
-          onClick={() => logout()}
+          onClick={async () => {
+            await logout();
+            toast("Logged out.");
+          }}
           className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
         >
           <LogOut aria-hidden="true" className="size-3.5 transition-transform group-hover:-translate-x-0.5" />

@@ -4,6 +4,7 @@ import { LoaderCircle, Play } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { ClaimGraph } from "@/components/ClaimGraph";
 import { PageHeader, PageShell } from "@/components/PageShell";
@@ -210,7 +211,13 @@ export default function IncidentDetailPage() {
     setRunning(true);
     setError(null);
     try {
-      setSelectedRun(await createRun(incidentId, mode));
+      const run = await createRun(incidentId, mode);
+      setSelectedRun(run);
+      if (run.verdict) {
+        toast.success(`Run finished: ${run.verdict.replace("_", " ")}`);
+      } else {
+        toast("Run finished with no verdict.");
+      }
       const [inc, runList] = await Promise.all([getIncident(incidentId), listRuns(incidentId)]);
       setIncident(inc);
       setRuns(runList);
