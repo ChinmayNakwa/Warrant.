@@ -1,7 +1,7 @@
 "use client";
 
-import { animate, motion, useReducedMotion, type Variants } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { animate, motion, type Variants } from "motion/react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
 // One easing and one distance for every entrance, so the pages move alike.
 // `Providers` sets `reducedMotion="user"`, which keeps the fades and drops the
@@ -80,12 +80,32 @@ export function StaggerItem({
   );
 }
 
+const REDUCED = "(prefers-reduced-motion: reduce)";
+
+function watchReduced(onChange: () => void) {
+  const query = window.matchMedia(REDUCED);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+/**
+ * True when the visitor asked for less motion. The server cannot know, so it
+ * and the first client render both say false, which keeps hydration matching.
+ */
+export function useStill(): boolean {
+  return useSyncExternalStore(
+    watchReduced,
+    () => window.matchMedia(REDUCED).matches,
+    () => false,
+  );
+}
+
 /**
  * Counts up to `value` once, when it mounts. The number shown at the end is
  * `value` exactly; with reduced motion it is shown straight away.
  */
 export function CountUp({ value }: { value: number }) {
-  const still = useReducedMotion();
+  const still = useStill();
   const [shown, setShown] = useState(0);
 
   useEffect(() => {

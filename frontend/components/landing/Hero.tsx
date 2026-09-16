@@ -6,7 +6,7 @@ export function Hero() {
   return (
     <section className="relative isolate">
       <div aria-hidden="true" className="hero-grid absolute inset-0 -z-10" />
-      <Stagger className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 pb-16 pt-20 text-center sm:pt-28">
+      <Stagger className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 pb-12 pt-20 text-center sm:pt-28">
         <StaggerItem>
           <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-ink-secondary">
             An ontology guardrail for AI incident analysis
