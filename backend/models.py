@@ -105,7 +105,7 @@ class Event(Base):
         ForeignKey("captures.id", ondelete="CASCADE"), nullable=False
     )
     ts: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    # process | network | file | registry
+    # process | network | file | registry | access | thread | module | dns
     event_type: Mapped[str] = mapped_column(String, nullable=False)
     process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
     parent_process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -114,7 +114,12 @@ class Event(Base):
     actor_user: Mapped[str | None] = mapped_column(String, nullable=True)
     dest_ip: Mapped[str | None] = mapped_column(String, nullable=True)
     dest_port: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # What the event is aimed at: a file or registry path, the image of the
+    # process accessed, the module loaded, or the name looked up
     target_object: Mapped[str | None] = mapped_column(String, nullable=True)
+    # access and thread events: the process aimed at, and the rights asked for
+    target_process_guid: Mapped[str | None] = mapped_column(String, nullable=True)
+    granted_access: Mapped[str | None] = mapped_column(String, nullable=True)
     raw_json: Mapped[str] = mapped_column(String, nullable=False)
     rarity: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     # sha256(capture name + raw record), so re-ingesting adds nothing

@@ -147,6 +147,24 @@ describe("layoutClaimGraph", () => {
     expect(file.label).toBe("…\\Local\\Temp\\payload.dat");
   });
 
+  it("names the process an access or thread event is aimed at", () => {
+    const names = processNamesFromEvents([
+      {
+        ref: "e1",
+        ts: "2026-01-15T10:10:00",
+        event_type: "access",
+        process_guid: P201,
+        image: "C:\\Temp\\dump.exe",
+        target_process_guid: P200,
+        target_object: "C:\\Windows\\System32\\lsass.exe",
+      },
+      // A DLL is not a process, and a load has no second process.
+      { ref: "e2", ts: "2026-01-15T10:10:01", event_type: "module", process_guid: P201, target_object: "a.dll" },
+    ]);
+
+    expect([...names]).toEqual([[P200.toLowerCase(), "lsass.exe"]]);
+  });
+
   it("opens a process's tooltip below its children and short of the entity column", () => {
     const layout = layoutClaimGraph(runClaims());
     const parent = node(layout, "Process", P201);

@@ -31,6 +31,8 @@ def _serialize(event: Event) -> dict[str, Any]:
         "dest_ip": event.dest_ip,
         "dest_port": event.dest_port,
         "target_object": event.target_object,
+        "target_process_guid": event.target_process_guid,
+        "granted_access": event.granted_access,
         "rarity": event.rarity,
     }
 
@@ -44,8 +46,8 @@ def search_events(
     time_from: datetime | None = None,
     time_to: datetime | None = None,
 ) -> list[dict[str, Any]]:
-    """Events of one type (process, network, file, registry), earliest first,
-    optionally for one process or within a time window."""
+    """Events of one type, earliest first, optionally for one process or
+    within a time window."""
     stmt = select(Event).where(Event.capture_id == capture_id, Event.event_type == event_type)
     if process_guid:
         stmt = stmt.where(Event.process_guid == process_guid)
@@ -104,11 +106,49 @@ def get_descendants(db: Session, capture_id: str, process_guid: str) -> list[dic
     return [_serialize(e) for e in sorted(found.values(), key=lambda e: e.ts)]
 
 
-def rarest_events(db: Session, capture_id: str) -> list[dict[str, Any]]:
+def _rights(granted_access: str | None) -> int:
+    """How many access rights a mask such as 0x1fffff asks for."""
+    try:
+        return int(granted_access or "0", 16).bit_count()
+    except ValueError:
+        return 0
+
+
+def widest_accesses(
+    db: Session, capture_id: str, process_guid: str, *, limit: int
+) -> list[dict[str, Any]]:
+    """The times this process opened another one, asking for the most rights
+    first. A process is opened over and over with the same rights, so each
+    target and mask is returned once, as its earliest event."""
     stmt = (
         select(Event)
-        .where(Event.capture_id == capture_id)
-        .order_by(Event.rarity.desc(), Event.ts)
-        .limit(_MAX_RARITY_LIMIT)
+        .where(
+            Event.capture_id == capture_id,
+            Event.event_type == "access",
+            Event.process_guid == process_guid,
+        )
+        .order_by(Event.ts)
     )
+    first: dict[tuple, Event] = {}
+    for event in db.scalars(stmt):
+        first.setdefault((event.target_object, event.granted_access), event)
+    widest = sorted(first.values(), key=lambda e: -_rights(e.granted_access))
+    return [_serialize(e) for e in widest[:limit]]
+
+
+def rarest_events(
+    db: Session,
+    capture_id: str,
+    *,
+    event_type: str | None = None,
+    process_guid: str | None = None,
+    limit: int = _MAX_RARITY_LIMIT,
+) -> list[dict[str, Any]]:
+    """The rarest events, optionally of one type or for one process."""
+    stmt = select(Event).where(Event.capture_id == capture_id)
+    if event_type:
+        stmt = stmt.where(Event.event_type == event_type)
+    if process_guid:
+        stmt = stmt.where(Event.process_guid == process_guid)
+    stmt = stmt.order_by(Event.rarity.desc(), Event.ts).limit(min(limit, _MAX_RARITY_LIMIT))
     return [_serialize(e) for e in db.scalars(stmt)]

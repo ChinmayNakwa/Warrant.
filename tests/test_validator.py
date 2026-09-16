@@ -54,9 +54,13 @@ def found(a: Answer) -> list[tuple[str, str]]:
 # --- the ontology ------------------------------------------------------------ #
 
 
-def test_ontology_allows_eight_relations():
+def test_ontology_allows_twelve_relations():
     assert set(allowed_triples()) == {
         ("Process", "spawned", "Process"),
+        ("Process", "accessed", "Process"),
+        ("Process", "injected_into", "Process"),
+        ("Process", "loaded", "File"),
+        ("Process", "resolved", "Network"),
         ("Process", "authenticated_as", "User"),
         ("Process", "connected_to", "Network"),
         ("Process", "wrote", "File"),
@@ -123,7 +127,7 @@ def test_any_event_shows_the_process_that_logged_it():
     """T1059.001 shows in process events. A network event logged by
     powershell.exe is evidence of it too: the first live run flagged exactly
     this and a repair then removed a correct technique."""
-    assert observable_kinds("T1059.001") == ("process",)
+    assert "network" not in observable_kinds("T1059.001")
     assert found(answer(techniques=[("T1059.001", ["e2"])])) == []
 
 
@@ -167,6 +171,43 @@ def test_a_claim_may_name_the_key_or_folder_the_target_is_in():
     assert check(r"HKLM\System") == ["value_not_in_event"]              # too short to mean anything
     assert check(r"HKLM\System\CurrentControlSet\Serv") == ["value_not_in_event"]  # not a whole key
     assert check(r"HKLM\System\CurrentControlSet\Services\Fax\Start") == ["value_not_in_event"]
+
+
+def test_claims_about_a_second_process_a_dll_or_a_lookup():
+    dumper, lsass = "C:\\Temp\\dump.exe", "C:\\Windows\\System32\\lsass.exe"
+    events = [
+        {"ref": "e1", "event_type": "access", "process_guid": PS, "image": dumper,
+         "target_object": lsass, "target_process_guid": "{g-7}", "granted_access": "0x1fffff"},
+        {"ref": "e2", "event_type": "thread", "process_guid": PS, "image": dumper,
+         "target_object": "C:\\Windows\\System32\\notepad.exe", "target_process_guid": "{g-8}"},
+        {"ref": "e3", "event_type": "module", "process_guid": PS, "image": dumper,
+         "target_object": "C:\\Windows\\System32\\comsvcs.dll"},
+        {"ref": "e4", "event_type": "dns", "process_guid": PS, "image": dumper, "target_object": "example.org"},
+        {"ref": "e5", "event_type": "file", "process_guid": PS, "image": dumper,
+         "target_object": "C:\\Temp\\lsass.dmp"},
+    ]
+
+    def check(*claims, techniques=(("T1003.001", ["e1"]),)):
+        return [v.code for v in validate(answer(techniques=techniques, claims=claims), events)]
+
+    # The process opened is named by its GUID, its path or its file name.
+    assert check(
+        claim("Process", PS, "accessed", "Process", "{g-7}", "e1"),
+        claim("Process", "dump.exe", "accessed", "Process", "LSASS.EXE", "e1"),
+        claim("Process", PS, "accessed", "Process", lsass, "e1"),
+        claim("Process", PS, "injected_into", "Process", "{g-8}", "e2"),
+        claim("Process", PS, "loaded", "File", "comsvcs.dll", "e3"),
+        claim("Process", PS, "resolved", "Network", "example.org", "e4"),
+    ) == []
+    # T1055 shows in thread events; no technique is tied to a lookup.
+    assert check(techniques=[("T1055", ["e2"])]) == []
+    assert "thread" in observable_kinds("T1055") and "dns" not in observable_kinds("T1055")
+
+    # e5 is the dump file being written: it does not show a process being opened.
+    assert check(claim("Process", PS, "accessed", "Process", "C:\Temp\lsass.dmp", "e5")) == ["claim_evidence_kind"]
+    assert check(claim("Process", PS, "accessed", "Process", "{g-8}", "e1")) == ["value_not_in_event"]
+    # A file written is still named in full.
+    assert check(claim("Process", PS, "wrote", "File", "lsass.dmp", "e5")) == ["value_not_in_event"]
 
 
 # --- the validator: one fault in, that fault out ------------------------------ #

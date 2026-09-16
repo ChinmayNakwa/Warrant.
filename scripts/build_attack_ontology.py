@@ -10,7 +10,7 @@ For every technique in MITRE's STIX bundle:
 "The kinds of event that can show it" is derived from ATT&CK itself, which
 links a technique to detection strategies, those to analytics, and each
 analytic to the data components it reads. The Windows analytics' components
-are mapped to the four event kinds stored here (`COMPONENT_KINDS`). A technique
+are mapped to the event kinds stored here (`COMPONENT_KINDS`). A technique
 none of whose components map gets no kind, and the guardrail then puts no
 evidence-kind requirement on it.
 
@@ -30,11 +30,15 @@ OUTPUT = Path(__file__).resolve().parents[1] / "backend" / "guardrail" / "ontolo
 MAX_HOPS = 10  # a replacement can itself have been revoked later
 
 # ATT&CK data component -> the event kind that records it here (Sysmon 1, 3,
-# 11, 12/13/14). Components with no entry (Process Access, Module Load, ...)
-# are not in this telemetry.
+# 7, 8, 10, 11, 12/13/14). Components with no entry (File Access, Logon
+# Session Creation, ...) are not in this telemetry. Nor is there one for a
+# DNS lookup made on the host, so no technique is tied to the dns kind.
 COMPONENT_KINDS = {
     "Process Creation": "process",
     "Command Execution": "process",
+    "Process Access": "access",
+    "Process Modification": "thread",
+    "Module Load": "module",
     "Network Connection Creation": "network",
     "File Creation": "file",
     "Windows Registry Key Creation": "registry",

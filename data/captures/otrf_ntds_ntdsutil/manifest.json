@@ -3,9 +3,9 @@
   "host": "DC01.pandalab.com",
   "scenario": "cmd_dumping_ntds_dit_file_ntdsutil",
   "synthetic": false,
-  "event_count": 957,
+  "event_count": 4059,
   "starts_at": "2023-07-18T14:43:52.031",
-  "ends_at": "2023-07-19T16:06:03.366",
+  "ends_at": "2023-07-19T16:06:05.241",
   "source": {
     "repository": "github.com/OTRF/Security-Datasets",
     "license": "MIT",
@@ -13,9 +13,9 @@
     "path": "datasets/atomic/windows/credential_access/host/cmd_dumping_ntds_dit_file_ntdsutil.zip",
     "zip_sha256": "4633882ab1e9eadd156b29a89a5a6e24b680ead1b11ee259fdbe0d19ddbf77cf",
     "converted_by": "scripts/fetch_otrf_capture.py",
-    "records_kept": 1178,
-    "records_dropped": 10006,
+    "records_kept": 9113,
+    "records_dropped": 2071,
     "records_malformed": 0
   },
-  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground truth in labels.json."
 }

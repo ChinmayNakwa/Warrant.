@@ -84,7 +84,9 @@ def build_capture(dataset: str, name: str, data: bytes) -> dict:
     title = dataset.rsplit("/", 1)[-1]
     lines, hosts, counts = adapt_zip(data, source=f"{title} (OTRF Security-Datasets, MIT)")
     if not lines:
-        raise SystemExit(f"{dataset}: no Sysmon process/network/file/registry records")
+        raise SystemExit(f"{dataset}: no Sysmon records of a kind that is kept")
+    # Byte-identical log lines are one event once ingested, so one is written.
+    lines = list(dict.fromkeys(lines))
 
     out_dir = CAPTURES_ROOT / name
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -96,8 +98,7 @@ def build_capture(dataset: str, name: str, data: bytes) -> dict:
         "host": " / ".join(host for host, _ in hosts.most_common()),
         "scenario": title,
         "synthetic": False,
-        # Byte-identical log lines are one event once ingested.
-        "event_count": len(set(lines)),
+        "event_count": len(lines),
         "starts_at": stamps[0].replace(" ", "T"),
         "ends_at": stamps[-1].replace(" ", "T"),
         "source": {
@@ -114,7 +115,7 @@ def build_capture(dataset: str, name: str, data: bytes) -> dict:
         "notes": (
             "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only "
             "Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands "
-            "(1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground "
+            "(1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground "
             "truth in labels.json."
         ),
     }

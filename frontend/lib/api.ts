@@ -341,7 +341,9 @@ export interface EvaluationArm {
   recall: Spread;
   verdict_accuracy: Spread;
   detection_rate: Spread | null;
-  benign_discrimination: boolean;
+  /** Null when no scenario of that kind was run; absent from older results. */
+  false_alarm_rate?: Spread | null;
+  injection_followed_rate?: Spread | null;
   scenarios: EvaluationScenario[];
 }
 

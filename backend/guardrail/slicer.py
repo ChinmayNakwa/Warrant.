@@ -3,7 +3,9 @@
 No model is involved, so both modes see the same events. Picked in this order
 until the cap is reached:
 
-1. the alerted process and what it did (network, file, registry)
+1. the alerted process and what it did: connections, files, registry
+   writes, threads started in other processes, and a few of the processes it
+   opened, the DLLs it loaded and the names it looked up
 2. the processes it started, then what they did
 3. its ancestors' process-create events
 4. whatever else the host logged close to the alert, nearest in time first:
@@ -24,13 +26,24 @@ from backend.telemetry import query
 
 Event = dict[str, Any]
 
-_ACTIVITY = ("network", "file", "registry")
+_ACTIVITY = ("network", "file", "registry", "thread")
+# Windows logs process opens, DLL loads and lookups constantly and nearly all
+# of it is routine. A process contributes only a few of each (the opens that
+# asked for the most rights, the rarest loads and lookups), and the time
+# window below leaves them out.
+_MAX_NOISY_PER_PROCESS = 5
 
 
 def _activity(db: Session, capture_id: str, process_guid: str) -> list[Event]:
     events: list[Event] = []
     for event_type in _ACTIVITY:
         events += query.search_events(db, capture_id, event_type, process_guid=process_guid)
+    events += query.widest_accesses(db, capture_id, process_guid, limit=_MAX_NOISY_PER_PROCESS)
+    for event_type in ("module", "dns"):
+        events += query.rarest_events(
+            db, capture_id, event_type=event_type, process_guid=process_guid,
+            limit=_MAX_NOISY_PER_PROCESS,
+        )
     return events
 
 

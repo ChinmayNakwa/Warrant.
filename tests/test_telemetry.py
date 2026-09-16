@@ -194,3 +194,86 @@ def test_queries_are_scoped_to_one_capture(capture):
         events_b = q.search_events(db, other.id, "process")
     assert len(events_a) == len(events_b) == 9
     assert {e["id"] for e in events_a}.isdisjoint({e["id"] for e in events_b})
+
+
+def _two_process_record(event_id: int, ts: str, guid_field: str, target: str, **data) -> dict:
+    return {
+        "System": {"EventID": event_id},
+        "EventData": {
+            "UtcTime": ts, f"Source{guid_field}": "{g1}", "SourceImage": "C:\\Temp\\dump.exe",
+            f"Target{guid_field}": "{g2}", "TargetImage": target, **data,
+        },
+    }
+
+
+def test_ingest_reads_process_access_remote_thread_dll_load_and_dns(tmp_path):
+    lsass = "C:\\Windows\\System32\\lsass.exe"
+    path = _write_jsonl(
+        tmp_path / "events.jsonl",
+        [
+            # Sysmon spells the GUID fields ProcessGUID in 10 and ProcessGuid in 8.
+            _two_process_record(10, "2026-02-01 00:00:00.000", "ProcessGUID", lsass, GrantedAccess="0x1fffff"),
+            _two_process_record(8, "2026-02-01 00:00:01.000", "ProcessGuid", lsass),
+            _record(7, "2026-02-01 00:00:02.000", "{g1}", "dump.exe", ImageLoaded="C:\\Windows\\System32\\dbghelp.dll"),
+            _record(22, "2026-02-01 00:00:03.000", "{g1}", "dump.exe", QueryName="example.org"),
+        ],
+    )
+    with SessionLocal() as db:
+        cap = ingest_capture(db, name="more_types_test", host="H", events_path=path)
+        db.commit()
+        (access,), (thread,), (module,), (dns,) = (
+            q.search_events(db, cap.id, t, process_guid="{g1}") for t in ("access", "thread", "module", "dns")
+        )
+
+    # The process acting is the event's own; the one acted on is its target.
+    for event in (access, thread):
+        assert (event["image"], event["target_object"], event["target_process_guid"]) == (
+            "C:\\Temp\\dump.exe", lsass, "{g2}",
+        )
+    assert (access["granted_access"], thread["granted_access"]) == ("0x1fffff", None)
+    assert module["target_object"].endswith("dbghelp.dll")
+    assert dns["target_object"] == "example.org"
+
+
+def test_a_dll_is_rare_when_few_processes_load_it(tmp_path):
+    path = _write_jsonl(
+        tmp_path / "events.jsonl",
+        [
+            _record(7, "2026-02-01 00:00:00.000", "{g1}", "a.exe", ImageLoaded="C:\\Windows\\System32\\kernel32.dll"),
+            _record(7, "2026-02-01 00:00:01.000", "{g2}", "b.exe", ImageLoaded="C:\\Windows\\System32\\kernel32.dll"),
+            _record(7, "2026-02-01 00:00:02.000", "{g2}", "b.exe", ImageLoaded="C:\\Temp\\evil.dll"),
+        ],
+    )
+    with SessionLocal() as db:
+        cap = ingest_capture(db, name="module_rarity_test", host="H", events_path=path)
+        db.commit()
+        rarest = q.rarest_events(db, cap.id, event_type="module", process_guid="{g2}", limit=1)
+        everything = q.search_events(db, cap.id, "module")
+    assert [e["target_object"] for e in rarest] == ["C:\\Temp\\evil.dll"]
+    assert sorted(e["rarity"] for e in everything) == [0.5, 0.5, 1.0]
+
+
+def test_widest_accesses_asks_for_the_most_rights_first_and_lists_each_target_once(tmp_path):
+    def opened(second: int, target: str, mask: str) -> dict:
+        return _two_process_record(10, f"2026-02-01 00:00:{second:02d}.000", "ProcessGUID", target, GrantedAccess=mask)
+
+    path = _write_jsonl(
+        tmp_path / "events.jsonl",
+        [
+            opened(0, "svchost.exe", "0x1000"),
+            opened(1, "winlogon.exe", "0x1410"),
+            opened(2, "lsass.exe", "0x1fffff"),
+            opened(3, "lsass.exe", "0x1fffff"),   # a dump opens its target again and again
+            opened(4, "csrss.exe", "not a mask"),  # telemetry is untrusted
+        ],
+    )
+    with SessionLocal() as db:
+        cap = ingest_capture(db, name="access_test", host="H", events_path=path)
+        db.commit()
+        widest = q.widest_accesses(db, cap.id, "{g1}", limit=3)
+        nobody = q.widest_accesses(db, cap.id, "{g2}", limit=3)
+
+    assert [(e["target_object"], e["ts"][17:19]) for e in widest] == [
+        ("lsass.exe", "02"), ("winlogon.exe", "01"), ("svchost.exe", "00"),
+    ]
+    assert nobody == []

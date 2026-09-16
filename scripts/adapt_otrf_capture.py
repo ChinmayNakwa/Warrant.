@@ -8,7 +8,8 @@ the top level, not nested) and mixes multiple Windows Event Log channels
 (`Security`, `Windows PowerShell`, `Microsoft-Windows-PowerShell/Operational`)
 in with the Sysmon ones in the same file. This script keeps only records from
 `Microsoft-Windows-Sysmon/Operational` whose EventID is one `ingest.py`
-understands (1, 3, 11, 12/13/14) and re-shapes those into the nested form.
+understands (1, 3, 7, 8, 10, 11, 12/13/14, 22) and re-shapes those into the
+nested form.
 Everything else is dropped and counted, never guessed at or passed through.
 
 Usage:
@@ -23,15 +24,18 @@ from collections import Counter
 from pathlib import Path
 
 _SYSMON_CHANNEL = "Microsoft-Windows-Sysmon/Operational"
-_UNDERSTOOD_EVENT_IDS = {1, 3, 11, 12, 13, 14}
+_UNDERSTOOD_EVENT_IDS = {1, 3, 7, 8, 10, 11, 12, 13, 14, 22}
 
-# OTRF field name -> nested EventData field name. Names already match
-# ingest.py's expectations once un-nested; only TargetFilename/TargetObject
-# vary by event type, both passed through under their own names since
-# `_parse_line` already reads `TargetFilename or TargetObject`.
+# The fields kept, under their own names: they already match what ingest.py
+# reads once un-nested. Which of them a record has depends on its event type.
 _FIELDS = (
     "UtcTime", "ProcessGuid", "ParentProcessGuid", "Image", "CommandLine",
     "User", "DestinationIp", "DestinationPort", "TargetFilename", "TargetObject",
+    # 8 and 10 (Sysmon spells the GUID fields differently in each)
+    "SourceProcessGuid", "SourceProcessGUID", "SourceImage",
+    "TargetProcessGuid", "TargetProcessGUID", "TargetImage", "GrantedAccess",
+    # 7 and 22
+    "ImageLoaded", "QueryName",
 )
 
 

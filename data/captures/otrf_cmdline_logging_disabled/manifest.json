@@ -3,9 +3,9 @@
   "host": "pedro-computer",
   "scenario": "reg_cmd_process_commandline_logging_disabled",
   "synthetic": false,
-  "event_count": 454,
+  "event_count": 3387,
   "starts_at": "2022-08-19T00:34:21.992",
-  "ends_at": "2022-08-19T00:36:10.434",
+  "ends_at": "2022-08-19T00:36:10.918",
   "source": {
     "repository": "github.com/OTRF/Security-Datasets",
     "license": "MIT",
@@ -13,9 +13,9 @@
     "path": "datasets/atomic/windows/defense_evasion/host/reg_cmd_process_commandline_logging_disabled.zip",
     "zip_sha256": "59ba811e1d268916b8ef0b65d0cd8ae3ffde0bb59a680ae72d8740eb36cd9b67",
     "converted_by": "scripts/fetch_otrf_capture.py",
-    "records_kept": 691,
-    "records_dropped": 8014,
+    "records_kept": 8468,
+    "records_dropped": 237,
     "records_malformed": 0
   },
-  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground truth in labels.json."
 }

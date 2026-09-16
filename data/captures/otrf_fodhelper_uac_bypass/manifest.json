@@ -1,11 +1,11 @@
 {
   "name": "otrf_fodhelper_uac_bypass",
-  "host": "WORKSTATION5.theshire.local / MORDORDC.theshire.local / WORKSTATION6.theshire.local",
+  "host": "WORKSTATION5.theshire.local / WORKSTATION6.theshire.local / MORDORDC.theshire.local",
   "scenario": "empire_uac_shellapi_fodhelper",
   "synthetic": false,
-  "event_count": 846,
+  "event_count": 2053,
   "starts_at": "2020-09-04T07:29:45.114",
-  "ends_at": "2020-09-04T07:31:09.951",
+  "ends_at": "2020-09-04T07:31:11.452",
   "source": {
     "repository": "github.com/OTRF/Security-Datasets",
     "license": "MIT",
@@ -13,9 +13,9 @@
     "path": "datasets/atomic/windows/privilege_escalation/host/empire_uac_shellapi_fodhelper.zip",
     "zip_sha256": "b8cc7aae826f5e4aea3ea47b2b6db69b062c39201de8de9621d5081622d3c504",
     "converted_by": "scripts/fetch_otrf_capture.py",
-    "records_kept": 1068,
-    "records_dropped": 3071,
+    "records_kept": 2858,
+    "records_dropped": 1281,
     "records_malformed": 0
   },
-  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground truth in labels.json."
 }

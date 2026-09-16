@@ -112,10 +112,18 @@ function processLabel(value: string, names: Map<string, string>): string {
 /** Image file names of the processes in the telemetry, keyed by lower-cased GUID. */
 export function processNamesFromEvents(events: TelemetryEvent[]): Map<string, string> {
   const names = new Map<string, string>();
-  for (const { event_type, process_guid, image } of events) {
-    if (event_type !== "process" || typeof process_guid !== "string" || typeof image !== "string") continue;
+  const name = (guid: unknown, image: unknown) => {
+    if (typeof guid !== "string" || typeof image !== "string") return;
     const base = image.split(/[\\/]/).pop();
-    if (base) names.set(process_guid.toLowerCase(), base);
+    if (base) names.set(guid.toLowerCase(), base);
+  };
+  for (const event of events) {
+    if (event.event_type === "process") name(event.process_guid, event.image);
+    // The process an access or thread event is aimed at was often running
+    // before the capture began, so no process event names it.
+    if (event.event_type === "access" || event.event_type === "thread") {
+      name(event.target_process_guid, event.target_object);
+    }
   }
   return names;
 }

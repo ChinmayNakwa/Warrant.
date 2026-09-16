@@ -3,7 +3,7 @@
   "host": "WORKSTATION5",
   "scenario": "cmd_sam_copy_esentutl",
   "synthetic": false,
-  "event_count": 256,
+  "event_count": 365,
   "starts_at": "2020-10-19T04:28:25.036",
   "ends_at": "2020-10-19T04:29:00.004",
   "source": {
@@ -13,9 +13,9 @@
     "path": "datasets/atomic/windows/credential_access/host/cmd_sam_copy_esentutl.zip",
     "zip_sha256": "f7a71135778aeff605abcb88a14a076f0814ab5cb136d07103bdf13c45551b64",
     "converted_by": "scripts/fetch_otrf_capture.py",
-    "records_kept": 290,
-    "records_dropped": 625,
+    "records_kept": 590,
+    "records_dropped": 325,
     "records_malformed": 0
   },
-  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground truth in labels.json."
 }

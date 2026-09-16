@@ -2,8 +2,16 @@
 
 One JSON object per line, shaped like `Get-WinEvent ... | ConvertTo-Json`
 output: a `System.EventID` plus an `EventData` field bag. Understood event
-IDs: 1 (process create), 3 (network connect), 11 (file create) and 12/13/14
-(registry add/set/rename, stored as one `registry` type).
+IDs:
+
+    1         process   a process was created
+    3         network   it connected somewhere
+    7         module    it loaded a DLL
+    8         thread    it started a thread inside another process
+    10        access    it opened another process
+    11        file      it created a file
+    12/13/14  registry  it added, set or renamed a key or value
+    22        dns       it looked a name up
 
 Telemetry is untrusted input: a malformed or unrecognised line is skipped.
 `raw_json` keeps the original record; the other columns are extracted from it
@@ -25,15 +33,17 @@ from sqlalchemy.orm import Session
 
 from backend.models import Capture, Event
 
-_PROCESS_CREATE = 1
-_NETWORK_CONNECT = 3
-_FILE_CREATE = 11
-_REGISTRY_EVENT_IDS = {12, 13, 14}
-
 _EVENT_TYPE_BY_ID = {
-    _PROCESS_CREATE: "process",
-    _NETWORK_CONNECT: "network",
-    _FILE_CREATE: "file",
+    1: "process",
+    3: "network",
+    7: "module",
+    8: "thread",
+    10: "access",
+    11: "file",
+    12: "registry",
+    13: "registry",
+    14: "registry",
+    22: "dns",
 }
 
 _TS_FORMATS = ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S")
@@ -67,7 +77,13 @@ class ParsedEvent:
     dest_ip: str | None
     dest_port: int | None
     target_object: str | None
+    target_process_guid: str | None
+    granted_access: str | None
     raw_json: str
+
+
+def _first(data: dict, *fields: str) -> str | None:
+    return next((data[f] for f in fields if data.get(f)), None)
 
 
 def _parse_line(line: str) -> ParsedEvent | None:
@@ -86,12 +102,8 @@ def _parse_line(line: str) -> ParsedEvent | None:
     if not isinstance(system, dict) or not isinstance(data, dict):
         return None
 
-    event_id = system.get("EventID")
-    if event_id in _EVENT_TYPE_BY_ID:
-        event_type = _EVENT_TYPE_BY_ID[event_id]
-    elif event_id in _REGISTRY_EVENT_IDS:
-        event_type = "registry"
-    else:
+    event_type = _EVENT_TYPE_BY_ID.get(system.get("EventID"))
+    if event_type is None:
         return None
 
     ts = _parse_ts(data.get("UtcTime") or "")
@@ -107,14 +119,20 @@ def _parse_line(line: str) -> ParsedEvent | None:
     return ParsedEvent(
         ts=ts,
         event_type=event_type,
-        process_guid=data.get("ProcessGuid"),
+        # An access or thread event names two processes. The one acting is
+        # stored as the event's own process; Sysmon spells its GUID field both ways.
+        process_guid=_first(data, "ProcessGuid", "SourceProcessGuid", "SourceProcessGUID"),
         parent_process_guid=data.get("ParentProcessGuid"),
-        image=data.get("Image"),
+        image=_first(data, "Image", "SourceImage"),
         command_line=data.get("CommandLine"),
         actor_user=data.get("User"),
         dest_ip=data.get("DestinationIp"),
         dest_port=dest_port,
-        target_object=data.get("TargetFilename") or data.get("TargetObject"),
+        target_object=_first(
+            data, "TargetFilename", "TargetObject", "TargetImage", "ImageLoaded", "QueryName"
+        ),
+        target_process_guid=_first(data, "TargetProcessGuid", "TargetProcessGUID"),
+        granted_access=data.get("GrantedAccess"),
         raw_json=json.dumps(record, sort_keys=True),
     )
 
@@ -130,17 +148,22 @@ def _rarity_group(record) -> tuple[str, ...]:
     """Events in the same group count as the same thing happening again;
     an event's rarity is 1 / its group's size. Each event type is grouped on
     the field that identifies it: the command line, the destination, or the
-    file or registry path."""
+    target."""
     event_type = record.event_type
     image = record.image or ""
+    target = (record.target_object or "").strip().lower()
     if event_type == "process":
         return (event_type, image, normalize_command_line(record.command_line))
     if event_type == "network":
         port = "" if record.dest_port is None else str(record.dest_port)
         return (event_type, image, record.dest_ip or "", port)
-    if event_type in ("file", "registry"):
-        return (event_type, image, (record.target_object or "").strip().lower())
-    return (event_type, image)
+    if event_type == "access":
+        return (event_type, image, target, record.granted_access or "")
+    if event_type == "module":
+        # Whichever process loads it: a DLL every process loads is common, one
+        # that a single process loads is not.
+        return (event_type, target)
+    return (event_type, image, target)
 
 
 def ingest_capture(
@@ -168,7 +191,8 @@ def ingest_capture(
     existing = db.execute(
         select(
             Event.id, Event.event_type, Event.image, Event.command_line, Event.dest_ip,
-            Event.dest_port, Event.target_object, Event.rarity, Event.dedupe_key,
+            Event.dest_port, Event.target_object, Event.granted_access, Event.rarity,
+            Event.dedupe_key,
         ).where(Event.capture_id == capture.id)
     ).all()
     seen_keys = {row.dedupe_key for row in existing}
@@ -207,6 +231,8 @@ def ingest_capture(
                     "dest_ip": parsed.dest_ip,
                     "dest_port": parsed.dest_port,
                     "target_object": parsed.target_object,
+                    "target_process_guid": parsed.target_process_guid,
+                    "granted_access": parsed.granted_access,
                     "raw_json": parsed.raw_json,
                     "rarity": 1.0 / group_counts[_rarity_group(parsed)],
                     "dedupe_key": dedupe_key,

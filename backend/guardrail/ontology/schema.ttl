@@ -40,6 +40,10 @@ wr:kind_process  a wr:EventKind ; wr:name "process" .
 wr:kind_network  a wr:EventKind ; wr:name "network" .
 wr:kind_file     a wr:EventKind ; wr:name "file" .
 wr:kind_registry a wr:EventKind ; wr:name "registry" .
+wr:kind_access   a wr:EventKind ; wr:name "access" .    # one process opened another
+wr:kind_thread   a wr:EventKind ; wr:name "thread" .    # ... or started a thread inside it
+wr:kind_module   a wr:EventKind ; wr:name "module" .    # a DLL was loaded
+wr:kind_dns      a wr:EventKind ; wr:name "dns" .       # a name was looked up
 
 # --- relations -------------------------------------------------------------- #
 # wr:evidencedBy: the event kinds a claim of this relation may cite. A
@@ -51,6 +55,14 @@ wr:spawned a owl:ObjectProperty, wr:Relation ; wr:name "spawned" ;
     rdfs:domain wr:Process ; rdfs:range wr:Process ;
     wr:evidencedBy wr:kind_process .
 
+wr:accessed a owl:ObjectProperty, wr:Relation ; wr:name "accessed" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Process ;
+    wr:evidencedBy wr:kind_access .
+
+wr:injected_into a owl:ObjectProperty, wr:Relation ; wr:name "injected_into" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Process ;
+    wr:evidencedBy wr:kind_thread .
+
 wr:authenticated_as a owl:ObjectProperty, wr:Relation ; wr:name "authenticated_as" ;
     rdfs:domain wr:Process ; rdfs:range wr:User ;
     wr:evidencedBy wr:kind_process .
@@ -59,6 +71,10 @@ wr:connected_to a owl:ObjectProperty, wr:Relation ; wr:name "connected_to" ;
     rdfs:domain wr:Process ; rdfs:range wr:Network ;
     wr:evidencedBy wr:kind_network .
 
+wr:resolved a owl:ObjectProperty, wr:Relation ; wr:name "resolved" ;
+    rdfs:domain wr:Process ; rdfs:range wr:Network ;
+    wr:evidencedBy wr:kind_dns .
+
 wr:wrote a owl:ObjectProperty, wr:Relation ; wr:name "wrote" ;
     rdfs:domain wr:Process ; rdfs:range wr:File ;
     wr:evidencedBy wr:kind_file .
@@ -66,6 +82,10 @@ wr:wrote a owl:ObjectProperty, wr:Relation ; wr:name "wrote" ;
 wr:read a owl:ObjectProperty, wr:Relation ; wr:name "read" ;
     rdfs:domain wr:Process ; rdfs:range wr:File ;
     wr:evidencedBy wr:kind_file .
+
+wr:loaded a owl:ObjectProperty, wr:Relation ; wr:name "loaded" ;
+    rdfs:domain wr:Process ; rdfs:range wr:File ;
+    wr:evidencedBy wr:kind_module .
 
 wr:dropped_by a owl:ObjectProperty, wr:Relation ; wr:name "dropped_by" ;
     rdfs:domain wr:File ; rdfs:range wr:Process ;

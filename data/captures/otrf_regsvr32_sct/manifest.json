@@ -1,9 +1,9 @@
 {
   "name": "otrf_regsvr32_sct",
-  "host": "WORKSTATION5.mordor.local / MORDORDC.mordor.local / WORKSTATION6.mordor.local",
+  "host": "WORKSTATION5.mordor.local / WORKSTATION6.mordor.local / MORDORDC.mordor.local",
   "scenario": "empire_launcher_sct_regsvr32",
   "synthetic": false,
-  "event_count": 627,
+  "event_count": 1283,
   "starts_at": "2020-07-22T03:27:40.949",
   "ends_at": "2020-07-22T03:28:31.209",
   "source": {
@@ -13,9 +13,9 @@
     "path": "datasets/atomic/windows/defense_evasion/host/empire_launcher_sct_regsvr32.zip",
     "zip_sha256": "abeb5c52c75286386e5eb999d7423d738a624191f4a95fb62694b471a10b2dab",
     "converted_by": "scripts/fetch_otrf_capture.py",
-    "records_kept": 943,
-    "records_dropped": 1447,
+    "records_kept": 1745,
+    "records_dropped": 645,
     "records_malformed": 0
   },
-  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/11/12/13/14) are kept; every other record in the export is dropped. Ground truth in labels.json."
+  "notes": "Real Sysmon telemetry from one OTRF/Security-Datasets atomic recording. Only Microsoft-Windows-Sysmon/Operational records with an EventID ingest.py understands (1/3/7/8/10/11/12/13/14/22) are kept; every other record in the export is dropped. Ground truth in labels.json."
 }

@@ -19,7 +19,7 @@ RELATIONS = sorted({r for _, r, _ in allowed_triples()})
 
 _EVENT_FIELDS = (
     "ts", "event_type", "process_guid", "parent_process_guid", "image", "command_line",
-    "actor_user", "dest_ip", "dest_port", "target_object",
+    "actor_user", "dest_ip", "dest_port", "target_object", "target_process_guid", "granted_access",
 )
 _MAX_FIELD_CHARS = 600
 

@@ -13,13 +13,13 @@ attack:T1001 a wr:Technique ;
     rdfs:label "Data Obfuscation" ;
     wr:tactic "command-and-control" ;
     wr:platform "ESXi", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_network, wr:kind_process .
 attack:T1001.001 a wr:Technique ;
     wr:techniqueId "T1001.001" ;
     rdfs:label "Junk Data" ;
     wr:tactic "command-and-control" ;
     wr:platform "ESXi", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network .
+    wr:observableAs wr:kind_access, wr:kind_network .
 attack:T1001.002 a wr:Technique ;
     wr:techniqueId "T1001.002" ;
     rdfs:label "Steganography" ;
@@ -41,13 +41,13 @@ attack:T1003 a wr:Technique ;
     rdfs:label "OS Credential Dumping" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1003.001 a wr:Technique ;
     wr:techniqueId "T1003.001" ;
     rdfs:label "LSASS Memory" ;
     wr:tactic "credential-access" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process, wr:kind_registry .
 attack:T1003.002 a wr:Technique ;
     wr:techniqueId "T1003.002" ;
     rdfs:label "Security Account Manager" ;
@@ -65,13 +65,13 @@ attack:T1003.004 a wr:Technique ;
     rdfs:label "LSA Secrets" ;
     wr:tactic "credential-access" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1003.005 a wr:Technique ;
     wr:techniqueId "T1003.005" ;
     rdfs:label "Cached Domain Credentials" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1003.006 a wr:Technique ;
     wr:techniqueId "T1003.006" ;
     rdfs:label "DCSync" ;
@@ -102,7 +102,7 @@ attack:T1006 a wr:Technique ;
     rdfs:label "Direct Volume Access" ;
     wr:tactic "stealth" ;
     wr:platform "Network Devices", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1007 a wr:Technique ;
     wr:techniqueId "T1007" ;
     rdfs:label "System Service Discovery" ;
@@ -124,7 +124,7 @@ attack:T1010 a wr:Technique ;
     rdfs:label "Application Window Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1011 a wr:Technique ;
     wr:techniqueId "T1011" ;
     rdfs:label "Exfiltration Over Other Network Medium" ;
@@ -205,7 +205,7 @@ attack:T1021 a wr:Technique ;
     rdfs:label "Remote Services" ;
     wr:tactic "lateral-movement" ;
     wr:platform "ESXi", "IaaS", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1021.001 a wr:Technique ;
     wr:techniqueId "T1021.001" ;
     rdfs:label "Remote Desktop Protocol" ;
@@ -223,7 +223,7 @@ attack:T1021.003 a wr:Technique ;
     rdfs:label "Distributed Component Object Model" ;
     wr:tactic "lateral-movement" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1021.004 a wr:Technique ;
     wr:techniqueId "T1021.004" ;
     rdfs:label "SSH" ;
@@ -277,7 +277,7 @@ attack:T1027 a wr:Technique ;
     rdfs:label "Obfuscated Files or Information" ;
     wr:tactic "stealth" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1027.001 a wr:Technique ;
     wr:techniqueId "T1027.001" ;
     rdfs:label "Binary Padding" ;
@@ -289,7 +289,7 @@ attack:T1027.002 a wr:Technique ;
     rdfs:label "Software Packing" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1027.003 a wr:Technique ;
     wr:techniqueId "T1027.003" ;
     rdfs:label "Steganography" ;
@@ -319,7 +319,7 @@ attack:T1027.007 a wr:Technique ;
     rdfs:label "Dynamic API Resolution" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1027.008 a wr:Technique ;
     wr:techniqueId "T1027.008" ;
     rdfs:label "Stripped Payloads" ;
@@ -355,13 +355,13 @@ attack:T1027.013 a wr:Technique ;
     rdfs:label "Encrypted/Encoded File" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1027.014 a wr:Technique ;
     wr:techniqueId "T1027.014" ;
     rdfs:label "Polymorphic Code" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1027.015 a wr:Technique ;
     wr:techniqueId "T1027.015" ;
     rdfs:label "Compression" ;
@@ -373,7 +373,7 @@ attack:T1027.016 a wr:Technique ;
     rdfs:label "Junk Code Insertion" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1027.017 a wr:Technique ;
     wr:techniqueId "T1027.017" ;
     rdfs:label "SVG Smuggling" ;
@@ -385,7 +385,7 @@ attack:T1027.018 a wr:Technique ;
     rdfs:label "Invisible Unicode" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1028 a wr:RetiredTechnique ;
     wr:techniqueId "T1028" ;
     rdfs:label "Windows Remote Management" ;
@@ -677,36 +677,37 @@ attack:T1055 a wr:Technique ;
     rdfs:label "Process Injection" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_thread .
 attack:T1055.001 a wr:Technique ;
     wr:techniqueId "T1055.001" ;
     rdfs:label "Dynamic-link Library Injection" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1055.002 a wr:Technique ;
     wr:techniqueId "T1055.002" ;
     rdfs:label "Portable Executable Injection" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process, wr:kind_thread .
 attack:T1055.003 a wr:Technique ;
     wr:techniqueId "T1055.003" ;
     rdfs:label "Thread Execution Hijacking" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process, wr:kind_thread .
 attack:T1055.004 a wr:Technique ;
     wr:techniqueId "T1055.004" ;
     rdfs:label "Asynchronous Procedure Call" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process, wr:kind_thread .
 attack:T1055.005 a wr:Technique ;
     wr:techniqueId "T1055.005" ;
     rdfs:label "Thread Local Storage" ;
     wr:tactic "privilege-escalation", "stealth" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_thread .
 attack:T1055.008 a wr:Technique ;
     wr:techniqueId "T1055.008" ;
     rdfs:label "Ptrace System Calls" ;
@@ -722,19 +723,19 @@ attack:T1055.011 a wr:Technique ;
     rdfs:label "Extra Window Memory Injection" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1055.012 a wr:Technique ;
     wr:techniqueId "T1055.012" ;
     rdfs:label "Process Hollowing" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process, wr:kind_thread .
 attack:T1055.013 a wr:Technique ;
     wr:techniqueId "T1055.013" ;
     rdfs:label "Process Doppelgänging" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1055.014 a wr:Technique ;
     wr:techniqueId "T1055.014" ;
     rdfs:label "VDSO Hijacking" ;
@@ -745,19 +746,19 @@ attack:T1055.015 a wr:Technique ;
     rdfs:label "ListPlanting" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process, wr:kind_thread .
 attack:T1056 a wr:Technique ;
     wr:techniqueId "T1056" ;
     rdfs:label "Input Capture" ;
     wr:tactic "collection", "credential-access" ;
     wr:platform "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry, wr:kind_thread .
 attack:T1056.001 a wr:Technique ;
     wr:techniqueId "T1056.001" ;
     rdfs:label "Keylogging" ;
     wr:tactic "collection", "credential-access" ;
     wr:platform "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_registry .
 attack:T1056.002 a wr:Technique ;
     wr:techniqueId "T1056.002" ;
     rdfs:label "GUI Input Capture" ;
@@ -774,13 +775,14 @@ attack:T1056.004 a wr:Technique ;
     wr:techniqueId "T1056.004" ;
     rdfs:label "Credential API Hooking" ;
     wr:tactic "collection", "credential-access" ;
-    wr:platform "Linux", "Windows", "macOS" .
+    wr:platform "Linux", "Windows", "macOS" ;
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_thread .
 attack:T1057 a wr:Technique ;
     wr:techniqueId "T1057" ;
     rdfs:label "Process Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1058 a wr:RetiredTechnique ;
     wr:techniqueId "T1058" ;
     rdfs:label "Service Registry Permissions Weakness" ;
@@ -790,13 +792,13 @@ attack:T1059 a wr:Technique ;
     rdfs:label "Command and Scripting Interpreter" ;
     wr:tactic "execution" ;
     wr:platform "Containers", "ESXi", "IaaS", "Identity Provider", "Linux", "Network Devices", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1059.001 a wr:Technique ;
     wr:techniqueId "T1059.001" ;
     rdfs:label "PowerShell" ;
     wr:tactic "execution" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1059.002 a wr:Technique ;
     wr:techniqueId "T1059.002" ;
     rdfs:label "AppleScript" ;
@@ -807,7 +809,7 @@ attack:T1059.003 a wr:Technique ;
     rdfs:label "Windows Command Shell" ;
     wr:tactic "execution" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1059.004 a wr:Technique ;
     wr:techniqueId "T1059.004" ;
     rdfs:label "Unix Shell" ;
@@ -818,7 +820,7 @@ attack:T1059.005 a wr:Technique ;
     rdfs:label "Visual Basic" ;
     wr:tactic "execution" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1059.006 a wr:Technique ;
     wr:techniqueId "T1059.006" ;
     rdfs:label "Python" ;
@@ -830,7 +832,7 @@ attack:T1059.007 a wr:Technique ;
     rdfs:label "JavaScript" ;
     wr:tactic "execution" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1059.008 a wr:Technique ;
     wr:techniqueId "T1059.008" ;
     rdfs:label "Network Device CLI" ;
@@ -846,7 +848,7 @@ attack:T1059.010 a wr:Technique ;
     rdfs:label "AutoHotKey & AutoIT" ;
     wr:tactic "execution" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1059.011 a wr:Technique ;
     wr:techniqueId "T1059.011" ;
     rdfs:label "Lua" ;
@@ -1323,7 +1325,7 @@ attack:T1106 a wr:Technique ;
     rdfs:label "Native API" ;
     wr:tactic "execution" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1107 a wr:RetiredTechnique ;
     wr:techniqueId "T1107" ;
     rdfs:label "File Deletion" ;
@@ -1340,7 +1342,7 @@ attack:T1110 a wr:Technique ;
     rdfs:label "Brute Force" ;
     wr:tactic "credential-access" ;
     wr:platform "Containers", "ESXi", "IaaS", "Identity Provider", "Linux", "Network Devices", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1110.001 a wr:Technique ;
     wr:techniqueId "T1110.001" ;
     rdfs:label "Password Guessing" ;
@@ -1351,7 +1353,7 @@ attack:T1110.002 a wr:Technique ;
     rdfs:label "Password Cracking" ;
     wr:tactic "credential-access" ;
     wr:platform "Identity Provider", "Linux", "Network Devices", "Office Suite", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1110.003 a wr:Technique ;
     wr:techniqueId "T1110.003" ;
     rdfs:label "Password Spraying" ;
@@ -1367,7 +1369,7 @@ attack:T1111 a wr:Technique ;
     rdfs:label "Multi-Factor Authentication Interception" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_registry .
 attack:T1112 a wr:Technique ;
     wr:techniqueId "T1112" ;
     rdfs:label "Modify Registry" ;
@@ -1379,7 +1381,7 @@ attack:T1113 a wr:Technique ;
     rdfs:label "Screen Capture" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1114 a wr:Technique ;
     wr:techniqueId "T1114" ;
     rdfs:label "Email Collection" ;
@@ -1409,7 +1411,7 @@ attack:T1115 a wr:Technique ;
     rdfs:label "Clipboard Data" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1116 a wr:RetiredTechnique ;
     wr:techniqueId "T1116" ;
     rdfs:label "Code Signing" ;
@@ -1433,7 +1435,7 @@ attack:T1120 a wr:Technique ;
     rdfs:label "Peripheral Device Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1121 a wr:RetiredTechnique ;
     wr:techniqueId "T1121" ;
     rdfs:label "Regsvcs/Regasm" ;
@@ -1447,19 +1449,19 @@ attack:T1123 a wr:Technique ;
     rdfs:label "Audio Capture" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1124 a wr:Technique ;
     wr:techniqueId "T1124" ;
     rdfs:label "System Time Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1125 a wr:Technique ;
     wr:techniqueId "T1125" ;
     rdfs:label "Video Capture" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1126 a wr:RetiredTechnique ;
     wr:techniqueId "T1126" ;
     rdfs:label "Network Share Connection Removal" ;
@@ -1469,19 +1471,19 @@ attack:T1127 a wr:Technique ;
     rdfs:label "Trusted Developer Utilities Proxy Execution" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_thread .
 attack:T1127.001 a wr:Technique ;
     wr:techniqueId "T1127.001" ;
     rdfs:label "MSBuild" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_thread .
 attack:T1127.002 a wr:Technique ;
     wr:techniqueId "T1127.002" ;
     rdfs:label "ClickOnce" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1127.003 a wr:Technique ;
     wr:techniqueId "T1127.003" ;
     rdfs:label "JamPlus" ;
@@ -1497,7 +1499,7 @@ attack:T1129 a wr:Technique ;
     rdfs:label "Shared Modules" ;
     wr:tactic "execution" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1130 a wr:RetiredTechnique ;
     wr:techniqueId "T1130" ;
     rdfs:label "Install Root Certificate" ;
@@ -1535,19 +1537,19 @@ attack:T1134 a wr:Technique ;
     rdfs:label "Access Token Manipulation" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1134.001 a wr:Technique ;
     wr:techniqueId "T1134.001" ;
     rdfs:label "Token Impersonation/Theft" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1134.002 a wr:Technique ;
     wr:techniqueId "T1134.002" ;
     rdfs:label "Create Process with Token" ;
     wr:tactic "privilege-escalation", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1134.003 a wr:Technique ;
     wr:techniqueId "T1134.003" ;
     rdfs:label "Make and Impersonate Token" ;
@@ -1599,7 +1601,7 @@ attack:T1137 a wr:Technique ;
     rdfs:label "Office Application Startup" ;
     wr:tactic "persistence" ;
     wr:platform "Office Suite", "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1137.001 a wr:Technique ;
     wr:techniqueId "T1137.001" ;
     rdfs:label "Office Template Macros" ;
@@ -1611,25 +1613,25 @@ attack:T1137.002 a wr:Technique ;
     rdfs:label "Office Test" ;
     wr:tactic "persistence" ;
     wr:platform "Office Suite", "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1137.003 a wr:Technique ;
     wr:techniqueId "T1137.003" ;
     rdfs:label "Outlook Forms" ;
     wr:tactic "persistence" ;
     wr:platform "Office Suite", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1137.004 a wr:Technique ;
     wr:techniqueId "T1137.004" ;
     rdfs:label "Outlook Home Page" ;
     wr:tactic "persistence" ;
     wr:platform "Office Suite", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1137.005 a wr:Technique ;
     wr:techniqueId "T1137.005" ;
     rdfs:label "Outlook Rules" ;
     wr:tactic "persistence" ;
     wr:platform "Office Suite", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1137.006 a wr:Technique ;
     wr:techniqueId "T1137.006" ;
     rdfs:label "Add-ins" ;
@@ -1649,7 +1651,7 @@ attack:T1140 a wr:Technique ;
     rdfs:label "Deobfuscate/Decode Files or Information" ;
     wr:tactic "stealth" ;
     wr:platform "ESXi", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1141 a wr:RetiredTechnique ;
     wr:techniqueId "T1141" ;
     rdfs:label "Input Prompt" ;
@@ -1842,7 +1844,7 @@ attack:T1185 a wr:Technique ;
     rdfs:label "Browser Session Hijacking" ;
     wr:tactic "collection" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_network, wr:kind_thread .
 attack:T1186 a wr:RetiredTechnique ;
     wr:techniqueId "T1186" ;
     rdfs:label "Process Doppelgänging" ;
@@ -1862,13 +1864,13 @@ attack:T1189 a wr:Technique ;
     rdfs:label "Drive-by Compromise" ;
     wr:tactic "initial-access" ;
     wr:platform "Identity Provider", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_thread .
 attack:T1190 a wr:Technique ;
     wr:techniqueId "T1190" ;
     rdfs:label "Exploit Public-Facing Application" ;
     wr:tactic "initial-access" ;
     wr:platform "Containers", "ESXi", "IaaS", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1191 a wr:RetiredTechnique ;
     wr:techniqueId "T1191" ;
     rdfs:label "CMSTP" ;
@@ -1890,24 +1892,25 @@ attack:T1195 a wr:Technique ;
     rdfs:label "Supply Chain Compromise" ;
     wr:tactic "initial-access" ;
     wr:platform "Linux", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1195.001 a wr:Technique ;
     wr:techniqueId "T1195.001" ;
     rdfs:label "Compromise Software Dependencies and Development Tools" ;
     wr:tactic "initial-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1195.002 a wr:Technique ;
     wr:techniqueId "T1195.002" ;
     rdfs:label "Compromise Software Supply Chain" ;
     wr:tactic "initial-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1195.003 a wr:Technique ;
     wr:techniqueId "T1195.003" ;
     rdfs:label "Compromise Hardware Supply Chain" ;
     wr:tactic "initial-access" ;
-    wr:platform "Linux", "Windows", "macOS" .
+    wr:platform "Linux", "Windows", "macOS" ;
+    wr:observableAs wr:kind_access, wr:kind_module .
 attack:T1196 a wr:RetiredTechnique ;
     wr:techniqueId "T1196" ;
     rdfs:label "Control Panel Items" ;
@@ -1933,7 +1936,7 @@ attack:T1200 a wr:Technique ;
     rdfs:label "Hardware Additions" ;
     wr:tactic "initial-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1201 a wr:Technique ;
     wr:techniqueId "T1201" ;
     rdfs:label "Password Policy Discovery" ;
@@ -1993,7 +1996,7 @@ attack:T1205 a wr:Technique ;
     rdfs:label "Traffic Signaling" ;
     wr:tactic "command-and-control", "persistence", "stealth" ;
     wr:platform "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1205.001 a wr:Technique ;
     wr:techniqueId "T1205.001" ;
     rdfs:label "Port Knocking" ;
@@ -2005,7 +2008,7 @@ attack:T1205.002 a wr:Technique ;
     rdfs:label "Socket Filters" ;
     wr:tactic "command-and-control", "persistence", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1206 a wr:RetiredTechnique ;
     wr:techniqueId "T1206" ;
     rdfs:label "Sudo Caching" ;
@@ -2028,18 +2031,19 @@ attack:T1210 a wr:Technique ;
     rdfs:label "Exploitation of Remote Services" ;
     wr:tactic "lateral-movement" ;
     wr:platform "ESXi", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1211 a wr:Technique ;
     wr:techniqueId "T1211" ;
     rdfs:label "Exploitation for Stealth" ;
     wr:tactic "stealth" ;
     wr:platform "IaaS", "Linux", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1212 a wr:Technique ;
     wr:techniqueId "T1212" ;
     rdfs:label "Exploitation for Credential Access" ;
     wr:tactic "credential-access" ;
-    wr:platform "Identity Provider", "Linux", "Windows", "macOS" .
+    wr:platform "Identity Provider", "Linux", "Windows", "macOS" ;
+    wr:observableAs wr:kind_access .
 attack:T1213 a wr:Technique ;
     wr:techniqueId "T1213" ;
     rdfs:label "Data from Information Repositories" ;
@@ -2090,19 +2094,19 @@ attack:T1216 a wr:Technique ;
     rdfs:label "System Script Proxy Execution" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1216.001 a wr:Technique ;
     wr:techniqueId "T1216.001" ;
     rdfs:label "PubPrn" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1216.002 a wr:Technique ;
     wr:techniqueId "T1216.002" ;
     rdfs:label "SyncAppvPublishingServer" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1217 a wr:Technique ;
     wr:techniqueId "T1217" ;
     rdfs:label "Browser Information Discovery" ;
@@ -2114,31 +2118,31 @@ attack:T1218 a wr:Technique ;
     rdfs:label "System Binary Proxy Execution" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1218.001 a wr:Technique ;
     wr:techniqueId "T1218.001" ;
     rdfs:label "Compiled HTML File" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.002 a wr:Technique ;
     wr:techniqueId "T1218.002" ;
     rdfs:label "Control Panel" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1218.003 a wr:Technique ;
     wr:techniqueId "T1218.003" ;
     rdfs:label "CMSTP" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1218.004 a wr:Technique ;
     wr:techniqueId "T1218.004" ;
     rdfs:label "InstallUtil" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1218.005 a wr:Technique ;
     wr:techniqueId "T1218.005" ;
     rdfs:label "Mshta" ;
@@ -2150,55 +2154,55 @@ attack:T1218.007 a wr:Technique ;
     rdfs:label "Msiexec" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.008 a wr:Technique ;
     wr:techniqueId "T1218.008" ;
     rdfs:label "Odbcconf" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.009 a wr:Technique ;
     wr:techniqueId "T1218.009" ;
     rdfs:label "Regsvcs/Regasm" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1218.010 a wr:Technique ;
     wr:techniqueId "T1218.010" ;
     rdfs:label "Regsvr32" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.011 a wr:Technique ;
     wr:techniqueId "T1218.011" ;
     rdfs:label "Rundll32" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.012 a wr:Technique ;
     wr:techniqueId "T1218.012" ;
     rdfs:label "Verclsid" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1218.013 a wr:Technique ;
     wr:techniqueId "T1218.013" ;
     rdfs:label "Mavinject" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1218.014 a wr:Technique ;
     wr:techniqueId "T1218.014" ;
     rdfs:label "MMC" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry .
 attack:T1218.015 a wr:Technique ;
     wr:techniqueId "T1218.015" ;
     rdfs:label "Electron Applications" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1219 a wr:Technique ;
     wr:techniqueId "T1219" ;
     rdfs:label "Remote Access Tools" ;
@@ -2227,7 +2231,7 @@ attack:T1220 a wr:Technique ;
     rdfs:label "XSL Script Processing" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1221 a wr:Technique ;
     wr:techniqueId "T1221" ;
     rdfs:label "Template Injection" ;
@@ -2260,13 +2264,13 @@ attack:T1480 a wr:Technique ;
     rdfs:label "Execution Guardrails" ;
     wr:tactic "stealth" ;
     wr:platform "ESXi", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_network, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_network, wr:kind_process, wr:kind_registry, wr:kind_thread .
 attack:T1480.001 a wr:Technique ;
     wr:techniqueId "T1480.001" ;
     rdfs:label "Environmental Keying" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1480.002 a wr:Technique ;
     wr:techniqueId "T1480.002" ;
     rdfs:label "Mutual Exclusion" ;
@@ -2278,7 +2282,7 @@ attack:T1482 a wr:Technique ;
     rdfs:label "Domain Trust Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1483 a wr:RetiredTechnique ;
     wr:techniqueId "T1483" ;
     rdfs:label "Domain Generation Algorithms" ;
@@ -2407,25 +2411,25 @@ attack:T1497 a wr:Technique ;
     rdfs:label "Virtualization/Sandbox Evasion" ;
     wr:tactic "discovery", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1497.001 a wr:Technique ;
     wr:techniqueId "T1497.001" ;
     rdfs:label "System Checks" ;
     wr:tactic "discovery", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1497.002 a wr:Technique ;
     wr:techniqueId "T1497.002" ;
     rdfs:label "User Activity Based Checks" ;
     wr:tactic "discovery", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1497.003 a wr:Technique ;
     wr:techniqueId "T1497.003" ;
     rdfs:label "Time Based Checks" ;
     wr:tactic "discovery", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1498 a wr:Technique ;
     wr:techniqueId "T1498" ;
     rdfs:label "Network Denial of Service" ;
@@ -2499,19 +2503,19 @@ attack:T1505 a wr:Technique ;
     rdfs:label "Server Software Component" ;
     wr:tactic "persistence" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1505.001 a wr:Technique ;
     wr:techniqueId "T1505.001" ;
     rdfs:label "SQL Stored Procedures" ;
     wr:tactic "persistence" ;
     wr:platform "Linux", "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1505.002 a wr:Technique ;
     wr:techniqueId "T1505.002" ;
     rdfs:label "Transport Agent" ;
     wr:tactic "persistence" ;
     wr:platform "Linux", "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1505.003 a wr:Technique ;
     wr:techniqueId "T1505.003" ;
     rdfs:label "Web Shell" ;
@@ -2523,13 +2527,13 @@ attack:T1505.004 a wr:Technique ;
     rdfs:label "IIS Components" ;
     wr:tactic "persistence" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1505.005 a wr:Technique ;
     wr:techniqueId "T1505.005" ;
     rdfs:label "Terminal Services DLL" ;
     wr:tactic "persistence" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1505.006 a wr:Technique ;
     wr:techniqueId "T1505.006" ;
     rdfs:label "vSphere Installation Bundles" ;
@@ -2548,13 +2552,13 @@ attack:T1518 a wr:Technique ;
     rdfs:label "Software Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "ESXi", "IaaS", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1518.001 a wr:Technique ;
     wr:techniqueId "T1518.001" ;
     rdfs:label "Security Software Discovery" ;
     wr:tactic "discovery" ;
     wr:platform "IaaS", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1518.002 a wr:Technique ;
     wr:techniqueId "T1518.002" ;
     rdfs:label "Backup Software Discovery" ;
@@ -2635,7 +2639,7 @@ attack:T1539 a wr:Technique ;
     rdfs:label "Steal Web Session Cookie" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1542 a wr:Technique ;
     wr:techniqueId "T1542" ;
     rdfs:label "Pre-OS Boot" ;
@@ -2706,7 +2710,7 @@ attack:T1546 a wr:Technique ;
     rdfs:label "Event Triggered Execution" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "IaaS", "Linux", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.001 a wr:Technique ;
     wr:techniqueId "T1546.001" ;
     rdfs:label "Change Default File Association" ;
@@ -2724,7 +2728,7 @@ attack:T1546.003 a wr:Technique ;
     rdfs:label "Windows Management Instrumentation Event Subscription" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1546.004 a wr:Technique ;
     wr:techniqueId "T1546.004" ;
     rdfs:label "Unix Shell Configuration Modification" ;
@@ -2745,7 +2749,7 @@ attack:T1546.007 a wr:Technique ;
     rdfs:label "Netsh Helper DLL" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.008 a wr:Technique ;
     wr:techniqueId "T1546.008" ;
     rdfs:label "Accessibility Features" ;
@@ -2757,25 +2761,25 @@ attack:T1546.009 a wr:Technique ;
     rdfs:label "AppCert DLLs" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.010 a wr:Technique ;
     wr:techniqueId "T1546.010" ;
     rdfs:label "AppInit DLLs" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.011 a wr:Technique ;
     wr:techniqueId "T1546.011" ;
     rdfs:label "Application Shimming" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.012 a wr:Technique ;
     wr:techniqueId "T1546.012" ;
     rdfs:label "Image File Execution Options Injection" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_process, wr:kind_registry .
 attack:T1546.013 a wr:Technique ;
     wr:techniqueId "T1546.013" ;
     rdfs:label "PowerShell Profile" ;
@@ -2792,7 +2796,7 @@ attack:T1546.015 a wr:Technique ;
     rdfs:label "Component Object Model Hijacking" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1546.016 a wr:Technique ;
     wr:techniqueId "T1546.016" ;
     rdfs:label "Installer Packages" ;
@@ -2814,7 +2818,7 @@ attack:T1547 a wr:Technique ;
     rdfs:label "Boot or Logon Autostart Execution" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1547.001 a wr:Technique ;
     wr:techniqueId "T1547.001" ;
     rdfs:label "Registry Run Keys / Startup Folder" ;
@@ -2826,25 +2830,25 @@ attack:T1547.002 a wr:Technique ;
     rdfs:label "Authentication Package" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_registry .
 attack:T1547.003 a wr:Technique ;
     wr:techniqueId "T1547.003" ;
     rdfs:label "Time Providers" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1547.004 a wr:Technique ;
     wr:techniqueId "T1547.004" ;
     rdfs:label "Winlogon Helper DLL" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1547.005 a wr:Technique ;
     wr:techniqueId "T1547.005" ;
     rdfs:label "Security Support Provider" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1547.006 a wr:Technique ;
     wr:techniqueId "T1547.006" ;
     rdfs:label "Kernel Modules and Extensions" ;
@@ -2860,7 +2864,7 @@ attack:T1547.008 a wr:Technique ;
     rdfs:label "LSASS Driver" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_registry .
 attack:T1547.009 a wr:Technique ;
     wr:techniqueId "T1547.009" ;
     rdfs:label "Shortcut Modification" ;
@@ -2872,7 +2876,7 @@ attack:T1547.010 a wr:Technique ;
     rdfs:label "Port Monitors" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1547.011 a wr:RetiredTechnique ;
     wr:techniqueId "T1547.011" ;
     rdfs:label "Plist Modification" ;
@@ -2882,7 +2886,7 @@ attack:T1547.012 a wr:Technique ;
     rdfs:label "Print Processors" ;
     wr:tactic "persistence", "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_registry .
 attack:T1547.013 a wr:Technique ;
     wr:techniqueId "T1547.013" ;
     rdfs:label "XDG Autostart Entries" ;
@@ -2904,7 +2908,7 @@ attack:T1548 a wr:Technique ;
     rdfs:label "Abuse Elevation Control Mechanism" ;
     wr:tactic "privilege-escalation" ;
     wr:platform "IaaS", "Identity Provider", "Linux", "Office Suite", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1548.001 a wr:Technique ;
     wr:techniqueId "T1548.001" ;
     rdfs:label "Setuid and Setgid" ;
@@ -2915,7 +2919,7 @@ attack:T1548.002 a wr:Technique ;
     rdfs:label "Bypass User Account Control" ;
     wr:tactic "privilege-escalation" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1548.003 a wr:Technique ;
     wr:techniqueId "T1548.003" ;
     rdfs:label "Sudo and Sudo Caching" ;
@@ -2941,7 +2945,7 @@ attack:T1550 a wr:Technique ;
     rdfs:label "Use Alternate Authentication Material" ;
     wr:tactic "lateral-movement" ;
     wr:platform "Containers", "IaaS", "Identity Provider", "Linux", "Office Suite", "SaaS", "Windows" ;
-    wr:observableAs wr:kind_network, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_network, wr:kind_process .
 attack:T1550.001 a wr:Technique ;
     wr:techniqueId "T1550.001" ;
     rdfs:label "Application Access Token" ;
@@ -2957,7 +2961,8 @@ attack:T1550.003 a wr:Technique ;
     wr:techniqueId "T1550.003" ;
     rdfs:label "Pass the Ticket" ;
     wr:tactic "lateral-movement" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access, wr:kind_module .
 attack:T1550.004 a wr:Technique ;
     wr:techniqueId "T1550.004" ;
     rdfs:label "Web Session Cookie" ;
@@ -3018,7 +3023,7 @@ attack:T1553 a wr:Technique ;
     rdfs:label "Subvert Trust Controls" ;
     wr:tactic "defense-impairment" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1553.001 a wr:Technique ;
     wr:techniqueId "T1553.001" ;
     rdfs:label "Gatekeeper Bypass" ;
@@ -3029,13 +3034,13 @@ attack:T1553.002 a wr:Technique ;
     rdfs:label "Code Signing" ;
     wr:tactic "defense-impairment" ;
     wr:platform "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1553.003 a wr:Technique ;
     wr:techniqueId "T1553.003" ;
     rdfs:label "SIP and Trust Provider Hijacking" ;
     wr:tactic "defense-impairment" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_registry .
+    wr:observableAs wr:kind_module, wr:kind_registry .
 attack:T1553.004 a wr:Technique ;
     wr:techniqueId "T1553.004" ;
     rdfs:label "Install Root Certificate" ;
@@ -3065,7 +3070,7 @@ attack:T1555 a wr:Technique ;
     rdfs:label "Credentials from Password Stores" ;
     wr:tactic "credential-access" ;
     wr:platform "IaaS", "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1555.001 a wr:Technique ;
     wr:techniqueId "T1555.001" ;
     rdfs:label "Keychain" ;
@@ -3081,19 +3086,19 @@ attack:T1555.003 a wr:Technique ;
     rdfs:label "Credentials from Web Browsers" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1555.004 a wr:Technique ;
     wr:techniqueId "T1555.004" ;
     rdfs:label "Windows Credential Manager" ;
     wr:tactic "credential-access" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1555.005 a wr:Technique ;
     wr:techniqueId "T1555.005" ;
     rdfs:label "Password Managers" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1555.006 a wr:Technique ;
     wr:techniqueId "T1555.006" ;
     rdfs:label "Cloud Secrets Management Stores" ;
@@ -3104,18 +3109,19 @@ attack:T1556 a wr:Technique ;
     rdfs:label "Modify Authentication Process" ;
     wr:tactic "credential-access", "defense-impairment", "persistence" ;
     wr:platform "IaaS", "Identity Provider", "Linux", "Network Devices", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1556.001 a wr:Technique ;
     wr:techniqueId "T1556.001" ;
     rdfs:label "Domain Controller Authentication" ;
     wr:tactic "credential-access", "defense-impairment", "persistence" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access, wr:kind_module .
 attack:T1556.002 a wr:Technique ;
     wr:techniqueId "T1556.002" ;
     rdfs:label "Password Filter DLL" ;
     wr:tactic "credential-access", "defense-impairment", "persistence" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_registry .
 attack:T1556.003 a wr:Technique ;
     wr:techniqueId "T1556.003" ;
     rdfs:label "Pluggable Authentication Modules" ;
@@ -3141,13 +3147,14 @@ attack:T1556.007 a wr:Technique ;
     wr:techniqueId "T1556.007" ;
     rdfs:label "Hybrid Identity" ;
     wr:tactic "credential-access", "defense-impairment", "persistence" ;
-    wr:platform "IaaS", "Identity Provider", "Office Suite", "SaaS", "Windows" .
+    wr:platform "IaaS", "Identity Provider", "Office Suite", "SaaS", "Windows" ;
+    wr:observableAs wr:kind_module .
 attack:T1556.008 a wr:Technique ;
     wr:techniqueId "T1556.008" ;
     rdfs:label "Network Provider DLL" ;
     wr:tactic "credential-access", "defense-impairment", "persistence" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_registry .
 attack:T1556.009 a wr:Technique ;
     wr:techniqueId "T1556.009" ;
     rdfs:label "Conditional Access Policies" ;
@@ -3186,22 +3193,25 @@ attack:T1558 a wr:Technique ;
     rdfs:label "Steal or Forge Kerberos Tickets" ;
     wr:tactic "credential-access" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1558.001 a wr:Technique ;
     wr:techniqueId "T1558.001" ;
     rdfs:label "Golden Ticket" ;
     wr:tactic "credential-access" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access .
 attack:T1558.002 a wr:Technique ;
     wr:techniqueId "T1558.002" ;
     rdfs:label "Silver Ticket" ;
     wr:tactic "credential-access" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access .
 attack:T1558.003 a wr:Technique ;
     wr:techniqueId "T1558.003" ;
     rdfs:label "Kerberoasting" ;
     wr:tactic "credential-access" ;
-    wr:platform "Windows" .
+    wr:platform "Windows" ;
+    wr:observableAs wr:kind_access .
 attack:T1558.004 a wr:Technique ;
     wr:techniqueId "T1558.004" ;
     rdfs:label "AS-REP Roasting" ;
@@ -3218,19 +3228,19 @@ attack:T1559 a wr:Technique ;
     rdfs:label "Inter-Process Communication" ;
     wr:tactic "execution" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1559.001 a wr:Technique ;
     wr:techniqueId "T1559.001" ;
     rdfs:label "Component Object Model" ;
     wr:tactic "execution" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1559.002 a wr:Technique ;
     wr:techniqueId "T1559.002" ;
     rdfs:label "Dynamic Data Exchange" ;
     wr:tactic "execution" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1559.003 a wr:Technique ;
     wr:techniqueId "T1559.003" ;
     rdfs:label "XPC Services" ;
@@ -3241,25 +3251,25 @@ attack:T1560 a wr:Technique ;
     rdfs:label "Archive Collected Data" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1560.001 a wr:Technique ;
     wr:techniqueId "T1560.001" ;
     rdfs:label "Archive via Utility" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1560.002 a wr:Technique ;
     wr:techniqueId "T1560.002" ;
     rdfs:label "Archive via Library" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1560.003 a wr:Technique ;
     wr:techniqueId "T1560.003" ;
     rdfs:label "Archive via Custom Method" ;
     wr:tactic "collection" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process .
 attack:T1561 a wr:Technique ;
     wr:techniqueId "T1561" ;
     rdfs:label "Disk Wipe" ;
@@ -3349,7 +3359,7 @@ attack:T1564 a wr:Technique ;
     rdfs:label "Hide Artifacts" ;
     wr:tactic "stealth" ;
     wr:platform "ESXi", "Linux", "Office Suite", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_process, wr:kind_registry .
 attack:T1564.001 a wr:Technique ;
     wr:techniqueId "T1564.001" ;
     rdfs:label "Hidden Files and Directories" ;
@@ -3408,7 +3418,7 @@ attack:T1564.010 a wr:Technique ;
     rdfs:label "Process Argument Spoofing" ;
     wr:tactic "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1564.011 a wr:Technique ;
     wr:techniqueId "T1564.011" ;
     rdfs:label "Ignore Process Interrupts" ;
@@ -3583,31 +3593,31 @@ attack:T1573 a wr:Technique ;
     rdfs:label "Encrypted Channel" ;
     wr:tactic "command-and-control" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network .
+    wr:observableAs wr:kind_module, wr:kind_network .
 attack:T1573.001 a wr:Technique ;
     wr:techniqueId "T1573.001" ;
     rdfs:label "Symmetric Cryptography" ;
     wr:tactic "command-and-control" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network .
+    wr:observableAs wr:kind_module, wr:kind_network .
 attack:T1573.002 a wr:Technique ;
     wr:techniqueId "T1573.002" ;
     rdfs:label "Asymmetric Cryptography" ;
     wr:tactic "command-and-control" ;
     wr:platform "ESXi", "Linux", "Network Devices", "Windows", "macOS" ;
-    wr:observableAs wr:kind_network .
+    wr:observableAs wr:kind_module, wr:kind_network .
 attack:T1574 a wr:Technique ;
     wr:techniqueId "T1574" ;
     rdfs:label "Hijack Execution Flow" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_access, wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1574.001 a wr:Technique ;
     wr:techniqueId "T1574.001" ;
     rdfs:label "DLL" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1574.002 a wr:RetiredTechnique ;
     wr:techniqueId "T1574.002" ;
     rdfs:label "DLL Side-Loading" ;
@@ -3622,7 +3632,7 @@ attack:T1574.005 a wr:Technique ;
     rdfs:label "Executable Installer File Permissions Weakness" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1574.006 a wr:Technique ;
     wr:techniqueId "T1574.006" ;
     rdfs:label "Dynamic Linker Hijacking" ;
@@ -3663,19 +3673,19 @@ attack:T1574.012 a wr:Technique ;
     rdfs:label "COR_PROFILER" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process, wr:kind_registry .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process, wr:kind_registry .
 attack:T1574.013 a wr:Technique ;
     wr:techniqueId "T1574.013" ;
     rdfs:label "KernelCallbackTable" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_process .
 attack:T1574.014 a wr:Technique ;
     wr:techniqueId "T1574.014" ;
     rdfs:label "AppDomainManager" ;
     wr:tactic "execution", "stealth" ;
     wr:platform "Windows" ;
-    wr:observableAs wr:kind_file, wr:kind_process .
+    wr:observableAs wr:kind_file, wr:kind_module, wr:kind_process .
 attack:T1578 a wr:Technique ;
     wr:techniqueId "T1578" ;
     rdfs:label "Modify Cloud Compute Infrastructure" ;
@@ -4186,7 +4196,7 @@ attack:T1606 a wr:Technique ;
     rdfs:label "Forge Web Credentials" ;
     wr:tactic "credential-access" ;
     wr:platform "IaaS", "Identity Provider", "Linux", "Office Suite", "SaaS", "Windows", "macOS" ;
-    wr:observableAs wr:kind_file .
+    wr:observableAs wr:kind_access, wr:kind_file .
 attack:T1606.001 a wr:Technique ;
     wr:techniqueId "T1606.001" ;
     rdfs:label "Web Cookies" ;
@@ -4287,7 +4297,7 @@ attack:T1620 a wr:Technique ;
     rdfs:label "Reflective Code Loading" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_access, wr:kind_module, wr:kind_process .
 attack:T1621 a wr:Technique ;
     wr:techniqueId "T1621" ;
     rdfs:label "Multi-Factor Authentication Request Generation" ;
@@ -4423,7 +4433,7 @@ attack:T1678 a wr:Technique ;
     rdfs:label "Delay Execution" ;
     wr:tactic "stealth" ;
     wr:platform "Linux", "Windows", "macOS" ;
-    wr:observableAs wr:kind_process .
+    wr:observableAs wr:kind_module, wr:kind_process .
 attack:T1679 a wr:Technique ;
     wr:techniqueId "T1679" ;
     rdfs:label "Selective Exclusion" ;

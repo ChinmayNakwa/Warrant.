@@ -146,6 +146,43 @@ def test_slice_without_a_usable_anchor_is_the_rarest_events(lab):
     assert [e["id"] for e in unknown] == [e["id"] for e in unanchored]
 
 
+def test_slice_takes_only_a_few_of_the_dll_loads_opens_and_lookups(tmp_path):
+    """Windows logs these by the thousand. The alerted process contributes five
+    of each, and what other processes loaded or opened at the time is left out."""
+    def record(event_id, second, guid, **data):
+        return {"System": {"EventID": event_id},
+                "EventData": {"UtcTime": f"2026-02-01 00:00:{second:02d}.000", "ProcessGuid": guid, **data}}
+
+    def opened(second, source, target, mask):
+        return {"System": {"EventID": 10},
+                "EventData": {"UtcTime": f"2026-02-01 00:00:{second:02d}.000", "SourceProcessGUID": source,
+                              "SourceImage": "x.exe", "TargetImage": target, "GrantedAccess": mask}}
+
+    records = [
+        record(1, 0, "{anchor}", Image="tool.exe", CommandLine="tool.exe"),
+        record(1, 1, "{other}", Image="svchost.exe", CommandLine="svchost.exe -k netsvcs"),
+        opened(2, "{anchor}", "lsass.exe", "0x1fffff"),
+        *[opened(3 + i, "{anchor}", f"proc{i}.exe", "0x1000") for i in range(8)],
+        *[record(7, 20 + i, "{anchor}", Image="tool.exe", ImageLoaded=f"lib{i}.dll") for i in range(8)],
+        *[record(22, 30 + i, "{anchor}", Image="tool.exe", QueryName=f"host{i}.example") for i in range(8)],
+        opened(40, "{other}", "winlogon.exe", "0x1fffff"),
+        record(7, 41, "{other}", Image="svchost.exe", ImageLoaded="common.dll"),
+    ]
+    path = tmp_path / "events.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+    with SessionLocal() as db:
+        capture_id = ingest_capture(db, name="noisy", host="H", events_path=path).id
+        db.commit()
+
+    events = _slice(capture_id, "{anchor}")
+
+    kinds = [e["event_type"] for e in events]
+    assert {k: kinds.count(k) for k in set(kinds)} == {"process": 2, "access": 5, "module": 5, "dns": 5}
+    assert "lsass.exe" in {e["target_object"] for e in events}
+    # The neighbour is there (it started within the window); what it loaded and opened is not.
+    assert [e["event_type"] for e in events if e["process_guid"] == "{other}"] == ["process"]
+
+
 # --- answer parsing ---------------------------------------------------------- #
 
 

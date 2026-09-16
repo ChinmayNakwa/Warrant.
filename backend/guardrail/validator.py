@@ -37,11 +37,11 @@ _NODE = "urn:warrant:answer:"
 # HKLM\System\CurrentControlSet, not HKLM alone.
 _MIN_PATH_DEPTH = 3
 _EVENT_KINDS = {
-    "process": WR.kind_process,
-    "network": WR.kind_network,
-    "file": WR.kind_file,
-    "registry": WR.kind_registry,
+    kind: WR[f"kind_{kind}"]
+    for kind in ("process", "network", "file", "registry", "access", "thread", "module", "dns")
 }
+# Kinds whose target is an executable or a DLL
+_IMAGE_TARGETS = ("access", "thread", "module")
 
 
 @dataclass(frozen=True)
@@ -63,10 +63,16 @@ def _event_values(event: dict[str, Any]) -> set[str]:
     """Everything in an event that a claim may name as its subject or object."""
     values = {
         event.get(field)
-        for field in ("process_guid", "parent_process_guid", "image", "actor_user", "dest_ip", "target_object")
+        for field in (
+            "process_guid", "parent_process_guid", "target_process_guid", "image", "actor_user",
+            "dest_ip", "target_object",
+        )
     }
+    # A process or a DLL may be named by its file name alone.
     if event.get("image"):
         values.add(ntpath.basename(event["image"]))
+    if event.get("event_type") in _IMAGE_TARGETS and event.get("target_object"):
+        values.add(ntpath.basename(event["target_object"]))
     if event.get("dest_ip") and event.get("dest_port") is not None:
         values.add(f"{event['dest_ip']}:{event['dest_port']}")
     # A claim may name the key or folder the target is in: an event that sets
