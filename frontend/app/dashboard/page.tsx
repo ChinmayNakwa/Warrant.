@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { Nav } from "@/components/Nav";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
+import { PageHeader, PageShell } from "@/components/PageShell";
 import { RunsLineChart } from "@/components/charts/RunsLineChart";
 import { SeverityBarChart } from "@/components/charts/SeverityBarChart";
 import { StatTile } from "@/components/charts/StatTile";
@@ -93,7 +93,6 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <Nav />
       {loadError && (
         <p className="px-6 py-4 text-sm text-red-600 dark:text-red-400 md:px-10" role="alert">
           {loadError}
@@ -104,11 +103,8 @@ export default function DashboardPage() {
       )}
       {summary && summary.recent_incidents.length === 0 && <EmptyState />}
       {summary && summary.recent_incidents.length > 0 && (
-        <div className="flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-8 md:px-10">
-          <header className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-ink">Dashboard</h1>
-            <p className="text-sm text-ink-muted">Your incidents and what the runs found.</p>
-          </header>
+        <PageShell width="wide">
+          <PageHeader title="Dashboard" description="Your incidents and what the runs found." />
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatTile label="Open incidents" value={String(summary.open_incidents)} />
@@ -148,7 +144,7 @@ export default function DashboardPage() {
             <h2 className="px-5 pb-1 pt-5 text-sm font-medium text-ink">Recent incidents</h2>
             <RecentIncidentsTable incidents={summary.recent_incidents} />
           </section>
-        </div>
+        </PageShell>
       )}
     </div>
   );

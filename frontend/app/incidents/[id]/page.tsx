@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ClaimGraph } from "@/components/ClaimGraph";
-import { Nav } from "@/components/Nav";
+import { PageHeader, PageShell } from "@/components/PageShell";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
 import {
   ApiError,
@@ -225,17 +225,13 @@ export default function IncidentDetailPage() {
 
   if (notFound) {
     return (
-      <div className="flex flex-1 flex-col">
-        <Nav />
-        <div className="flex flex-1 items-center justify-center text-ink-muted">Incident not found.</div>
-      </div>
+      <div className="flex flex-1 items-center justify-center text-ink-muted">Incident not found.</div>
     );
   }
 
   return (
     <div className="flex flex-1 flex-col">
-      <Nav />
-      <div className="flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-8 md:px-10">
+      <PageShell width="narrow">
         {error && (
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">
             {error}
@@ -244,14 +240,10 @@ export default function IncidentDetailPage() {
         {!incident && !error && <p className="text-sm text-ink-muted">Loading…</p>}
         {incident && (
           <>
-            <header className="flex flex-col gap-2">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-semibold tracking-tight text-ink">{incident.title}</h1>
-                <SeverityBadge severity={incident.severity} />
-                <VerdictBadge verdict={incident.verdict} />
-              </div>
-              {incident.description && <p className="text-sm text-ink-muted">{incident.description}</p>}
-            </header>
+            <PageHeader title={incident.title} description={incident.description || undefined}>
+              <SeverityBadge severity={incident.severity} />
+              <VerdictBadge verdict={incident.verdict} />
+            </PageHeader>
 
             <section className={`${CARD} flex flex-wrap items-center gap-4`}>
               <fieldset className="flex flex-col gap-2">
@@ -303,7 +295,7 @@ export default function IncidentDetailPage() {
             )}
           </>
         )}
-      </div>
+      </PageShell>
     </div>
   );
 }

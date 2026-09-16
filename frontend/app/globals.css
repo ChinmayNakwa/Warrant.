@@ -59,9 +59,9 @@ body {
 }
 
 /*
- * The sidebar (`components/Nav.tsx`) is fixed on wide screens. Pages render
- * it themselves and only when signed in, so the page makes room for it here
- * instead of every page carrying a layout wrapper.
+ * The sidebar (`components/Nav.tsx`) is fixed on wide screens. It is only on
+ * the page when signed in, so the page makes room for it here instead of
+ * every page carrying a layout wrapper.
  */
 @media (min-width: 768px) {
   body:has([data-app-nav]) {

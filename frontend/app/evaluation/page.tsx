@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import { Nav } from "@/components/Nav";
+import { PageHeader, PageShell } from "@/components/PageShell";
 import { PrecisionRecallChart } from "@/components/charts/PrecisionRecallChart";
 import {
   ApiError,
@@ -232,15 +232,11 @@ export default function EvaluationPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <Nav />
-      <div className="flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-8 md:px-10">
-        <header className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">Evaluation</h1>
-          <p className="max-w-2xl text-sm text-ink-muted">
-            Every labelled scenario is run in guarded mode and scored twice: the model&apos;s first answer
-            is the baseline, the answer left after the check is the guarded result.
-          </p>
-        </header>
+      <PageShell>
+        <PageHeader
+          title="Evaluation"
+          description="Every labelled scenario is run in guarded mode and scored twice: the model's first answer is the baseline, the answer left after the check is the guarded result."
+        />
         {loadError && (
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">
             {loadError}
@@ -255,7 +251,7 @@ export default function EvaluationPage() {
           </p>
         )}
         {results?.map((result) => <ModelResults key={result.model} result={result} />)}
-      </div>
+      </PageShell>
     </div>
   );
 }

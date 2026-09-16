@@ -17,10 +17,6 @@ vi.mock("@/lib/useRequireAuth", () => ({
   useRequireAuth: () => ({ user: FAKE_USER, status: "authenticated" }),
 }));
 
-vi.mock("@/lib/auth", () => ({
-  useAuth: () => ({ user: FAKE_USER, status: "authenticated", logout: vi.fn() }),
-}));
-
 vi.mock("@/lib/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api")>();
   return { ...actual, getEvaluationResults: vi.fn() };

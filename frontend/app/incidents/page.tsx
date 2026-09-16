@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
-import { Nav } from "@/components/Nav";
+import { PageHeader, PageShell } from "@/components/PageShell";
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
 import {
   ApiError,
@@ -110,93 +110,94 @@ export default function IncidentsPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <Nav />
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10 sm:flex-row">
-        <section className="flex-1">
-          <h1 className="mb-4 text-xl font-semibold text-ink">Incidents</h1>
-          {loadError && <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>}
-          {incidents === null && !loadError ? (
-            <p className="text-sm text-ink-muted">Loading…</p>
-          ) : (
-            <IncidentList incidents={incidents ?? []} />
-          )}
-        </section>
-
-        <section className="w-full sm:w-80">
-          <h2 className="mb-4 text-lg font-semibold text-ink">File an incident</h2>
-          <form onSubmit={handleCreate} className="flex flex-col gap-3">
-            <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-              Title
-              <input
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-              Description
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-              Severity
-              <select
-                value={severity}
-                onChange={(e) => setSeverity(e.target.value as Severity)}
-                className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-              >
-                {SEVERITIES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-              Capture
-              <select
-                required
-                value={captureName}
-                onChange={(e) => setCaptureName(e.target.value)}
-                className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-              >
-                {captures.length === 0 && <option value="">No captures available</option>}
-                {captures.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.name} ({c.event_count} events)
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-              Anchor process GUID (optional)
-              <input
-                value={anchorGuid}
-                onChange={(e) => setAnchorGuid(e.target.value)}
-                placeholder="leave blank to use the rarest events"
-                className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
-              />
-            </label>
-            {formError && (
-              <p data-testid="form-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
-                {formError}
-              </p>
+      <PageShell>
+        <PageHeader title="Incidents" description="Every incident you have filed, newest first." />
+        <div className="flex flex-col gap-8 sm:flex-row">
+          <section className="flex-1">
+            {loadError && <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>}
+            {incidents === null && !loadError ? (
+              <p className="text-sm text-ink-muted">Loading…</p>
+            ) : (
+              <IncidentList incidents={incidents ?? []} />
             )}
-            <button
-              type="submit"
-              disabled={submitting || captures.length === 0}
-              className="mt-2 h-11 rounded-md bg-accent font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
-            >
-              {submitting ? "Filing…" : "File incident"}
-            </button>
-          </form>
-        </section>
-      </div>
+          </section>
+
+          <section className="w-full sm:w-80">
+            <h2 className="mb-4 text-lg font-semibold text-ink">File an incident</h2>
+            <form onSubmit={handleCreate} className="flex flex-col gap-3">
+              <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+                Title
+                <input
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+                Description
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+                Severity
+                <select
+                  value={severity}
+                  onChange={(e) => setSeverity(e.target.value as Severity)}
+                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                >
+                  {SEVERITIES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+                Capture
+                <select
+                  required
+                  value={captureName}
+                  onChange={(e) => setCaptureName(e.target.value)}
+                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                >
+                  {captures.length === 0 && <option value="">No captures available</option>}
+                  {captures.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name} ({c.event_count} events)
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-sm text-ink-secondary">
+                Anchor process GUID (optional)
+                <input
+                  value={anchorGuid}
+                  onChange={(e) => setAnchorGuid(e.target.value)}
+                  placeholder="leave blank to use the rarest events"
+                  className="rounded-md border border-line-strong bg-surface px-3 py-2 text-ink outline-none focus:border-accent"
+                />
+              </label>
+              {formError && (
+                <p data-testid="form-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
+                  {formError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={submitting || captures.length === 0}
+                className="mt-2 h-11 rounded-md bg-accent font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
+              >
+                {submitting ? "Filing…" : "File incident"}
+              </button>
+            </form>
+          </section>
+        </div>
+      </PageShell>
     </div>
   );
 }
