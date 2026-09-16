@@ -2,8 +2,8 @@
 #
 # Entity types, the relations allowed between them, and the kind of telemetry
 # event that can evidence each relation. Techniques are in attack.ttl
-# (generated from MITRE ATT&CK). The rules an answer must meet are in
-# shapes.ttl.
+# (generated from MITRE ATT&CK), and what each looks like in telemetry is in
+# indicators.ttl. The rules an answer must meet are in shapes.ttl.
 #
 # Every class and property has a wr:name: the word a model writes. An answer
 # is matched to the ontology by those names, as literals. No IRI is ever built
@@ -84,4 +84,9 @@ wr:Answer         a owl:Class .   # wr:verdict
 wr:TechniqueClaim a owl:Class .   # wr:techniqueId, wr:citesRef*
 wr:Claim          a owl:Class .   # wr:subjectType, wr:relationName, wr:objectType,
                                    # wr:subjectKey, wr:objectKey, wr:citesRef
-wr:Event          a owl:Class .   # wr:ref, wr:kind, wr:showsKind*, wr:value*
+wr:Event          a owl:Class .   # wr:ref, wr:kind, wr:showsKind*, wr:value*, wr:text*
+
+# The platform every capture here was recorded on. A technique ATT&CK does not
+# list for it cannot be in this telemetry.
+wr:telemetryPlatform a owl:DatatypeProperty .
+wr: wr:telemetryPlatform "Windows" .

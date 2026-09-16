@@ -2,8 +2,8 @@
 ontology individuals.
 
 For every technique in MITRE's STIX bundle:
-  * in use        -> `wr:Technique`, with its name, tactics, and the kinds of
-                     telemetry event that can show it;
+  * in use        -> `wr:Technique`, with its name, tactics, platforms, and the
+                     kinds of telemetry event that can show it;
   * revoked       -> `wr:RetiredTechnique` with `wr:replacedBy` its current id;
   * deprecated    -> `wr:RetiredTechnique` with no replacement.
 
@@ -154,6 +154,9 @@ def render(bundle: dict, commit: str) -> str:
             )
             if tactics:
                 parts.append("wr:tactic " + ", ".join(_literal(t) for t in tactics))
+            platforms = sorted(technique.get("x_mitre_platforms", []))
+            if platforms:
+                parts.append("wr:platform " + ", ".join(_literal(p) for p in platforms))
             observable = sorted(kinds.get(technique["id"], ()))
             if observable:
                 parts.append("wr:observableAs " + ", ".join(f"wr:kind_{k}" for k in observable))

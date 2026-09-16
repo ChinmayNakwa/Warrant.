@@ -30,6 +30,8 @@ It runs every case two ways so the effect can be measured:
    |---|---|
    | `technique_unknown`, `technique_retired` | An ATT&CK id that does not exist or is no longer in use |
    | `technique_uncited`, `technique_evidence_kind` | A technique with no evidence, or evidence of the wrong kind |
+   | `technique_platform` | A technique ATT&CK does not list for Windows, such as Unix Shell |
+   | `technique_indicator` | A technique whose cited events carry no trace of it, such as LSASS dumping cited on events that never name lsass |
    | `event_missing` | A cited event that is not in the telemetry |
    | `type_unknown`, `relation_unknown`, `triple_not_allowed` | A claim the ontology has no words for, such as a file that "spawned" a user |
    | `claim_evidence_kind`, `value_not_in_event` | A claim whose cited event does not actually show it |
@@ -135,6 +137,10 @@ describing it, and a `labels.json` with the expected verdict and techniques.
 
 The ATT&CK technique list in `backend/guardrail/ontology/attack.ttl` is
 generated from MITRE's published data by `scripts/build_attack_ontology.py`.
+`indicators.ttl` beside it is written by hand: for 37 techniques that
+have a signature of their own (a named binary, a registry key, a file), the
+text one of the cited events must contain. A technique with no entry there is
+not checked this way.
 
 ## Tests
 
@@ -165,7 +171,7 @@ backend/
     analyst.py         one run, start to finish
     metrics.py         scoring against a label
     evaluation.py      baseline against guarded over every scenario
-    ontology/          schema.ttl, attack.ttl, shapes.ttl
+    ontology/          schema.ttl, attack.ttl, indicators.ttl, shapes.ttl
   routes/              auth, captures, incidents, dashboard, evaluation
   migrations/          Alembic
 frontend/              Next.js, TypeScript, Tailwind

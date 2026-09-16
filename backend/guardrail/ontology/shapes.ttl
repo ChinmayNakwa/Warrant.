@@ -70,6 +70,40 @@ wrs:technique_evidence_kind a sh:NodeShape ;
             }
         }""" ] .
 
+# The two rules below also cover a claim whose object is a technique
+# (`exhibits`), judged on the one event it cites.
+
+wrs:technique_platform a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim, wr:Claim ;
+    sh:message "ATT&CK does not list this technique for the platform this telemetry is from" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:techniqueId|wr:objectTechniqueId ?id .
+            ?t a wr:Technique ; wr:techniqueId ?id .
+            ?ontology wr:telemetryPlatform ?platform .
+            FILTER NOT EXISTS { ?t wr:platform ?platform }
+        }""" ] .
+
+# Only for a technique indicators.ttl describes, and only when at least one
+# cited event is real. wr:text is an event's image, command line, target and
+# destination, lower-cased.
+wrs:technique_indicator a sh:NodeShape ;
+    sh:targetClass wr:TechniqueClaim, wr:Claim ;
+    sh:message "none of the cited events carries a trace of this technique" ;
+    sh:sparql [ sh:prefixes wrs: ; sh:select """
+        SELECT $this WHERE {
+            $this wr:techniqueId|wr:objectTechniqueId ?id .
+            ?t a wr:Technique ; wr:techniqueId ?id .
+            FILTER EXISTS { ?t wr:indicator ?anyIndicator }
+            FILTER EXISTS { $this wr:citesRef ?anyRef . ?anyEvent wr:ref ?anyRef }
+            FILTER NOT EXISTS {
+                $this wr:citesRef ?ref .
+                ?event wr:ref ?ref ; wr:text ?text .
+                ?t wr:indicator ?indicator .
+                FILTER CONTAINS(?text, ?indicator)
+            }
+        }""" ] .
+
 # --- citations (techniques and claims) --------------------------------------- #
 
 wrs:event_missing a sh:NodeShape ;

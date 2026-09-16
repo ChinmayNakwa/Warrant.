@@ -9,14 +9,24 @@ from __future__ import annotations
 import pytest
 
 from backend.guardrail.answer import Answer
-from backend.guardrail.ontology import allowed_triples, observable_kinds, replacement_for, rule_messages
+from backend.guardrail.ontology import (
+    WR,
+    allowed_triples,
+    indicators,
+    observable_kinds,
+    ontology_graph,
+    platforms,
+    replacement_for,
+    rule_messages,
+)
 from backend.guardrail.validator import validate
 
 PS = "{g-1}"
 EVENTS = [
     {"ref": "e1", "event_type": "process", "process_guid": PS, "parent_process_guid": "{g-0}",
      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "actor_user": "LAB\\victim"},
-    {"ref": "e2", "event_type": "network", "process_guid": PS, "dest_ip": "10.0.0.5", "dest_port": 8080},
+    {"ref": "e2", "event_type": "network", "process_guid": PS, "dest_ip": "10.0.0.5", "dest_port": 8080,
+     "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"},
     {"ref": "e3", "event_type": "file", "process_guid": PS, "target_object": "C:\\Temp\\payload.dat"},
     {"ref": "e4", "event_type": "registry", "process_guid": PS, "target_object": "HKU\\Run\\x"},
 ]
@@ -68,6 +78,25 @@ def test_attack_techniques_are_loaded_from_mitre_data():
     assert found(answer(techniques=[("T1003", ["e3"])])) == []
 
 
+def test_techniques_carry_their_platforms_and_some_carry_indicators():
+    assert platforms("T1003.001") == ("Windows",)
+    assert "Windows" not in platforms("T1059.004")   # Unix Shell
+    assert "lsass" in indicators("T1003.001")
+    assert indicators("T1105") == ()                  # no signature of its own
+    assert indicators("T1003") == ()                  # a parent is not checked
+
+
+def test_every_indicator_is_for_a_windows_technique_in_use_and_is_lower_case():
+    graph = ontology_graph()
+    described = set(graph.subjects(WR.indicator, None))
+    assert len(described) > 30
+    for node in described:
+        technique_id = str(graph.value(node, WR.techniqueId))
+        assert "Windows" in platforms(technique_id), f"{node} is not a Windows technique in use"
+        # Event text is lower-cased before it is searched.
+        assert all(i == i.lower() and len(i) >= 2 for i in indicators(technique_id)), technique_id
+
+
 # --- the validator: a conforming answer --------------------------------------- #
 
 
@@ -96,6 +125,32 @@ def test_any_event_shows_the_process_that_logged_it():
     this and a repair then removed a correct technique."""
     assert observable_kinds("T1059.001") == ("process",)
     assert found(answer(techniques=[("T1059.001", ["e2"])])) == []
+
+
+def test_an_indicator_is_found_in_any_cited_event_whatever_its_case_or_slashes():
+    events = [
+        {"ref": "e1", "event_type": "process", "process_guid": PS, "image": "C:\\Windows\\System32\\esentutl.exe",
+         "command_line": "esentutl.exe /y /vss C:\\windows/system32/config/SAM /d C:\\ProgramData\\SAM"},
+        {"ref": "e2", "event_type": "file", "process_guid": PS, "target_object": "C:\\ProgramData\\notes.txt"},
+    ]
+
+    def check(technique, cited):
+        return [v.code for v in validate(answer(techniques=[(technique, cited)]), events)]
+
+    assert check("T1003.002", ["e1"]) == []
+    assert check("T1003.002", ["e2", "e1"]) == []   # one cited event showing it is enough
+    assert check("T1003.002", ["e2"]) == ["technique_indicator"]
+    # A technique indicators.ttl does not describe is not checked this way.
+    assert check("T1105", ["e2"]) == []
+
+
+def test_the_message_says_what_the_ontology_expected_and_nothing_from_the_answer():
+    faulty = answer(techniques=[("T1059.004", ["e1"]), ("T1037.001", ["e3"])])
+
+    messages = {v.code: v.message for v in validate(faulty, EVENTS)}
+
+    assert messages["technique_platform"].endswith("(it is listed for ESXi, Linux, Network Devices, macOS)")
+    assert messages["technique_indicator"].endswith("(one would contain any of: userinitmprlogonscript)")
 
 
 def test_a_claim_may_name_the_key_or_folder_the_target_is_in():
@@ -127,6 +182,14 @@ def test_a_claim_may_name_the_key_or_folder_the_target_is_in():
         (answer(techniques=[("T1105", ["e9"])]), [("techniques[0]", "event_missing")]),
         # T1071.001 (web protocols) shows in network events only; e3 is a file event.
         (answer(techniques=[("T1071.001", ["e3"])]), [("techniques[0]", "technique_evidence_kind")]),
+        # T1059.004 is Unix Shell: ATT&CK does not list it for Windows.
+        (answer(techniques=[("T1059.004", ["e1"])]), [("techniques[0]", "technique_platform")]),
+        # T1003.001 is LSASS memory; e3 writes payload.dat and names nothing of the kind.
+        (answer(techniques=[("T1003.001", ["e3"])]), [("techniques[0]", "technique_indicator")]),
+        (
+            answer(claims=[claim("Process", PS, "exhibits", "Technique", "T1218.005", "e1")]),
+            [("claims[0]", "technique_indicator")],
+        ),
         (
             answer(claims=[claim("Process", PS, "wrote", "File", "C:\\Temp\\payload.dat", "e77")]),
             [("claims[0]", "event_missing")],
@@ -170,6 +233,7 @@ def test_each_fault_is_reported_as_exactly_that_fault(faulty, expected):
 def test_every_rule_in_the_shapes_file_is_exercised_above():
     exercised = {
         "technique_unknown", "technique_retired", "technique_uncited", "technique_evidence_kind",
+        "technique_platform", "technique_indicator",
         "event_missing", "type_unknown", "relation_unknown", "triple_not_allowed",
         "claim_evidence_kind", "value_not_in_event", "claim_technique_unknown",
         "verdict_malicious_without_technique", "verdict_benign_with_technique",

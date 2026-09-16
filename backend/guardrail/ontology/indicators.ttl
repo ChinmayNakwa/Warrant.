@@ -1,0 +1,73 @@
+# What a technique looks like in Windows telemetry. Written by hand.
+#
+# wr:indicator is a piece of text. A technique that has indicators must cite at
+# least one event whose image, command line, target or destination contains one
+# of them (case ignored, and / read as \ too). A parent technique such as
+# T1003 is not checked: it covers sub-techniques this file does not list.
+#
+# Only techniques with a signature of their own are listed: a named binary, a
+# registry key, a file. Each list is written from the technique's definition
+# and is deliberately loose, so that it never rejects a true claim; all it
+# rejects is a technique cited on events that carry no trace of it. A technique
+# with many unrelated forms (T1548.002, T1105, T1027) has no indicators and is
+# not checked this way.
+
+@prefix wr: <https://warrant.example/ontology#> .
+@prefix attack: <https://warrant.example/attack/> .
+
+# --- credential access ------------------------------------------------------- #
+
+attack:T1003.001 wr:indicator "lsass", "comsvcs", "minidump", "procdump", "sekurlsa", "dumpert" .
+attack:T1003.002 wr:indicator "config\\sam", "hklm\\sam", "hkey_local_machine\\sam", "lsadump::sam",
+    "samdump", "secretsdump" .
+attack:T1003.003 wr:indicator "ntds", "secretsdump" .
+attack:T1003.004 wr:indicator "policy\\secrets", "hklm\\security", "hkey_local_machine\\security",
+    "config\\security", "lsadump::secrets", "secretsdump" .
+attack:T1003.005 wr:indicator "security\\cache", "lsadump::cache", "cachedump" .
+attack:T1003.006 wr:indicator "dcsync", "secretsdump" .
+
+# --- execution --------------------------------------------------------------- #
+
+attack:T1059.001 wr:indicator "powershell", "pwsh", "system.management.automation" .
+attack:T1059.003 wr:indicator "cmd.exe", ".bat", ".cmd" .
+attack:T1059.005 wr:indicator "wscript", "cscript", "vbscript", ".vbs", ".vbe" .
+attack:T1059.006 wr:indicator "python", ".py" .
+attack:T1059.007 wr:indicator "wscript", "cscript", "mshta", "javascript", "jscript", ".js" .
+attack:T1047     wr:indicator "wmic", "wmiprvse", "wmiobject", "wmimethod", "cimmethod", "win32_", "scrcons" .
+attack:T1569.002 wr:indicator "psexe", "sc.exe", "sc ", "services.exe", "\\services\\", "net start",
+    "start-service" .
+
+# --- persistence ------------------------------------------------------------- #
+
+attack:T1037.001 wr:indicator "userinitmprlogonscript" .
+attack:T1053.002 wr:indicator "at.exe" .
+attack:T1053.005 wr:indicator "schtasks", "schedule", "\\tasks\\", "taskcache", "taskschd" .
+attack:T1136.001 wr:indicator "net user", "net1 user", "new-localuser", "/add" .
+attack:T1543.003 wr:indicator "sc.exe", "sc ", "services.exe", "\\services\\", "new-service", "binpath",
+    "psexesvc" .
+attack:T1547.001 wr:indicator "currentversion\\run", "policies\\explorer\\run", "\\startup", "shell folders",
+    "currentversion\\windows\\load", "bootexecute" .
+
+# --- signed binaries used as a proxy ------------------------------------------ #
+
+attack:T1218.001 wr:indicator "hh.exe", ".chm" .
+attack:T1218.002 wr:indicator "control.exe", ".cpl" .
+attack:T1218.003 wr:indicator "cmstp" .
+attack:T1218.004 wr:indicator "installutil" .
+attack:T1218.005 wr:indicator "mshta" .
+attack:T1218.007 wr:indicator "msiexec" .
+attack:T1218.008 wr:indicator "odbcconf" .
+attack:T1218.009 wr:indicator "regsvcs", "regasm" .
+attack:T1218.010 wr:indicator "regsvr32" .
+attack:T1218.011 wr:indicator "rundll32" .
+attack:T1218.012 wr:indicator "verclsid" .
+attack:T1218.013 wr:indicator "mavinject" .
+attack:T1218.014 wr:indicator "mmc.exe", ".msc" .
+attack:T1197     wr:indicator "bitsadmin", "bitstransfer", " bits", "qmgr" .
+
+# --- lateral movement, impact and clean-up ------------------------------------ #
+
+attack:T1021.002 wr:indicator "admin$", "c$", "ipc$", ":445", "psexe" .
+attack:T1021.006 wr:indicator "winrm", "wsmprovhost", "wsman", "pssession", "invoke-command", ":5985", ":5986" .
+attack:T1685.005 wr:indicator "wevtutil", "clear-eventlog", "remove-eventlog", ".evtx" .
+attack:T1490     wr:indicator "vssadmin", "wbadmin", "bcdedit", "shadowcopy" .

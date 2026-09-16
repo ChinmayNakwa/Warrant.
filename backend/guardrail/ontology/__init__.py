@@ -1,5 +1,6 @@
 """Loads the ontology: `schema.ttl` (entity types and relations), `attack.ttl`
-(ATT&CK techniques, generated) and `shapes.ttl` (the rules an answer must meet).
+(ATT&CK techniques, generated), `indicators.ttl` (what a technique looks like
+in telemetry) and `shapes.ttl` (the rules an answer must meet).
 
 The files are parsed once per process.
 """
@@ -8,7 +9,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-from rdflib import RDF, RDFS, Graph, Namespace
+from rdflib import RDF, RDFS, Graph, Literal, Namespace
 from rdflib.namespace import SH
 
 _DIR = Path(__file__).resolve().parent
@@ -22,6 +23,7 @@ def ontology_graph() -> Graph:
     graph = Graph()
     graph.parse(_DIR / "schema.ttl", format="turtle")
     graph.parse(_DIR / "attack.ttl", format="turtle")
+    graph.parse(_DIR / "indicators.ttl", format="turtle")
     return graph
 
 
@@ -84,3 +86,27 @@ def replacement_for(technique_id: str) -> str | None:
 
 def observable_kinds(technique_id: str) -> tuple[str, ...]:
     return _techniques().get(technique_id, (None, ()))[1]
+
+
+def _literals(technique_id: str, prop) -> tuple[str, ...]:
+    graph = ontology_graph()
+    return tuple(
+        sorted(
+            str(value)
+            for node in graph.subjects(WR.techniqueId, Literal(technique_id))
+            for value in graph.objects(node, prop)
+        )
+    )
+
+
+@lru_cache
+def platforms(technique_id: str) -> tuple[str, ...]:
+    """The platforms ATT&CK lists the technique for."""
+    return _literals(technique_id, WR.platform)
+
+
+@lru_cache
+def indicators(technique_id: str) -> tuple[str, ...]:
+    """The text one of the technique's cited events must contain; `()` if the
+    technique is not checked this way."""
+    return _literals(technique_id, WR.indicator)

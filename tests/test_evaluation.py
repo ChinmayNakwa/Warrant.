@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import json
 
+from backend.config import get_settings
+from backend.database import SessionLocal
 from backend.llm import ModelError
 from backend.guardrail.evaluation import (
     CAPTURE_NAMES,
@@ -15,16 +17,20 @@ from backend.guardrail.evaluation import (
     results_path,
     run_evaluation,
 )
+from backend.guardrail.ontology import indicators, platforms, replacement_for
+from backend.guardrail.slicer import build_slice
+from backend.guardrail.validator import _event_texts
+from backend.telemetry.ingest import ingest_capture_dir
 
 CHAIN = "{00000000-0000-0000-0000-000000000201}"
 CRED = "{00000000-0000-0000-0000-000000000301}"
 BENIGN = "{00000000-0000-0000-0000-000000000401}"
 
 
-def _reply(verdict, *techniques) -> str:
+def _reply(verdict, *techniques, events=("e1",)) -> str:
     return json.dumps(
         {"verdict": verdict, "confidence": 0.9, "summary": "s", "claims": [],
-         "techniques": [{"id": t, "events": ["e1"]} for t in techniques]}
+         "techniques": [{"id": t, "events": list(events)} for t in techniques]}
     )
 
 
@@ -46,7 +52,8 @@ class Scripted:
 
 FIRST = {
     # Right, plus an id that does not exist.
-    CHAIN: _reply("MALICIOUS", "T1059.001", "T1027", "T1105", "T1547.001", "T9999"),
+    # The chain's Run key is its fourth event; e1 alone would not show T1547.001.
+    CHAIN: _reply("MALICIOUS", "T1059.001", "T1027", "T1105", "T1547.001", "T9999", events=("e1", "e4")),
     CRED: _reply("MALICIOUS", "T1003.001"),
     BENIGN: _reply("BENIGN"),
 }
@@ -147,3 +154,26 @@ def test_a_checkpoint_is_written_after_every_repeat(client):
 def test_every_capture_directory_is_evaluated():
     on_disk = {p.parent.name for p in CAPTURES_ROOT.glob("*/labels.json")} - {"large_workstation"}
     assert on_disk == set(CAPTURE_NAMES)
+
+
+def test_the_ontology_rejects_no_labelled_technique_given_its_scenarios_whole_slice():
+    """The platform and indicator rules must never cost a true technique: every
+    technique a label lists is a Windows one, and if it has indicators some
+    event in the scenario's slice carries one."""
+    settings = get_settings()
+    with SessionLocal() as db:
+        for name in CAPTURE_NAMES:
+            capture = ingest_capture_dir(db, CAPTURES_ROOT / name)
+            labels = json.loads((CAPTURES_ROOT / name / "labels.json").read_text(encoding="utf-8"))
+            for scenario in labels["scenarios"]:
+                events = build_slice(
+                    db, capture.id, scenario["anchor_process_guid"],
+                    max_events=settings.max_slice_events, window_seconds=settings.slice_window_seconds,
+                )
+                texts = [text for event in events for text in _event_texts(event)]
+                for listed in [*scenario["expected_techniques"], *scenario.get("accepted_techniques", [])]:
+                    technique = replacement_for(listed) or listed
+                    where = f"{name}/{scenario['name']}: {listed}"
+                    assert "Windows" in platforms(technique), where
+                    wanted = indicators(technique)
+                    assert not wanted or any(i in text for i in wanted for text in texts), where

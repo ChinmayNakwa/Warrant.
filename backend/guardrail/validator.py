@@ -22,8 +22,10 @@ from backend.guardrail.answer import Answer
 from backend.guardrail.ontology import (
     WR,
     WRS,
+    indicators,
     observable_kinds,
     ontology_graph,
+    platforms,
     replacement_for,
     rule_messages,
     shapes_graph,
@@ -75,6 +77,16 @@ def _event_values(event: dict[str, Any]) -> set[str]:
     return {str(v) for v in values if v}
 
 
+def _event_texts(event: dict[str, Any]) -> set[str]:
+    """The text a technique's indicators are looked for in."""
+    texts = {event.get(field) for field in ("image", "command_line", "target_object")}
+    if event.get("dest_ip") and event.get("dest_port") is not None:
+        texts.add(f"{event['dest_ip']}:{event['dest_port']}")
+    lowered = {str(t).lower() for t in texts if t}
+    # Windows takes either slash in a path: config/SAM is config\SAM.
+    return lowered | {t.replace("/", "\\") for t in lowered}
+
+
 def _data_graph(answer: Answer, events: list[dict[str, Any]]) -> tuple[Graph, dict[URIRef, str]]:
     # The ontology is copied in so the shapes' SPARQL queries can read it.
     graph = Graph()
@@ -101,6 +113,8 @@ def _data_graph(answer: Answer, events: list[dict[str, Any]]) -> tuple[Graph, di
             graph.add((e, WR.showsKind, WR.kind_process))
         for value in _event_values(event):
             graph.add((e, WR.value, _key(value)))
+        for text in _event_texts(event):
+            graph.add((e, WR.text, Literal(text)))
 
     a = node(VERDICT_PATH)
     graph.add((a, RDF.type, WR.Answer))
@@ -131,13 +145,21 @@ def _data_graph(answer: Answer, events: list[dict[str, Any]]) -> tuple[Graph, di
 def _detail(code: str, answer: Answer, path: str) -> str:
     """What the ontology knows about the technique id at fault, added to the
     rule's message."""
-    if not path.startswith("techniques["):
+    if path == VERDICT_PATH:
         return ""
-    technique_id = answer.techniques[int(path[len("techniques[") : -1])].id
+    group, index = path[:-1].split("[")
+    if group == "techniques":
+        technique_id = answer.techniques[int(index)].id
+    else:
+        technique_id = answer.claims[int(index)].object.strip()
     if code == "technique_retired" and (current := replacement_for(technique_id)):
         return f" (the id in use is {current})"
     if code == "technique_evidence_kind" and (kinds := observable_kinds(technique_id)):
         return f" (it shows in {', '.join(kinds)} events)"
+    if code == "technique_platform" and (listed := platforms(technique_id)):
+        return f" (it is listed for {', '.join(listed)})"
+    if code == "technique_indicator" and (wanted := indicators(technique_id)):
+        return f" (one would contain any of: {', '.join(wanted)})"
     return ""
 
 
