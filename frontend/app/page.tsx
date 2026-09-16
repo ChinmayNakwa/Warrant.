@@ -1,7 +1,9 @@
 import { ClaimDemo } from "@/components/landing/ClaimDemo";
+import { ClosingCta, LandingFooter } from "@/components/landing/Closing";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { LandingHeader } from "@/components/landing/LandingHeader";
+import { ProductPreview } from "@/components/landing/ProductPreview";
 
 export default function Home() {
   return (
@@ -11,7 +13,10 @@ export default function Home() {
         <Hero />
         <ClaimDemo />
         <HowItWorks />
+        <ProductPreview />
+        <ClosingCta />
       </main>
+      <LandingFooter />
     </div>
   );
 }

@@ -158,9 +158,8 @@ export function ClaimGraph({
                   markerEnd={`url(#${markerId}-${style})`}
                   opacity={active && !on ? 0.2 : 1}
                 >
-                  <title>
-                    {e.claim.subject} —{e.claim.relation}→ {e.claim.object}
-                  </title>
+                  {/* One string: React does not hydrate a <title> with several children. */}
+                  <title>{`${e.claim.subject} —${e.claim.relation}→ ${e.claim.object}`}</title>
                 </path>
               );
             })}
