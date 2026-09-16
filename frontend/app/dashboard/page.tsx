@@ -1,9 +1,11 @@
 "use client";
 
+import { FolderOpen, Inbox, Play, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { SeverityBadge, VerdictBadge } from "@/components/Badges";
+import { Reveal, Skeleton, Stagger, StaggerItem } from "@/components/motion";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { RunsLineChart } from "@/components/charts/RunsLineChart";
 import { SeverityBarChart } from "@/components/charts/SeverityBarChart";
@@ -28,7 +30,7 @@ function RecentIncidentsTable({ incidents }: { incidents: DashboardSummary["rece
       </thead>
       <tbody>
         {incidents.map((incident) => (
-          <tr key={incident.id} className="border-b border-line last:border-0">
+          <tr key={incident.id} className="border-b border-line transition-colors last:border-0 hover:bg-sunken">
             <td className="px-5 py-3">
               <Link
                 href={`/incidents/${incident.id}`}
@@ -55,7 +57,10 @@ function RecentIncidentsTable({ incidents }: { incidents: DashboardSummary["rece
 
 function EmptyState() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+    <Reveal className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+      <span className="flex size-12 items-center justify-center rounded-full bg-accent-soft text-accent">
+        <Inbox aria-hidden="true" className="size-6" />
+      </span>
       <h1 className="text-2xl font-semibold tracking-tight text-ink">No incidents yet</h1>
       <p className="max-w-sm text-sm text-ink-muted">
         File your first incident and run an analysis to see it here.
@@ -66,6 +71,25 @@ function EmptyState() {
       >
         File an incident
       </Link>
+    </Reveal>
+  );
+}
+
+/** The dashboard's outline, shown until the summary arrives. */
+function LoadingState() {
+  return (
+    <div role="status" className="flex w-full max-w-6xl flex-col gap-6 px-6 py-8 md:px-10">
+      <span className="sr-only">Loading…</span>
+      <Skeleton className="h-8 w-40" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Skeleton className="h-28 rounded-xl" />
+        <Skeleton className="h-28 rounded-xl" />
+        <Skeleton className="h-28 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Skeleton className="h-72 rounded-xl" />
+        <Skeleton className="h-72 rounded-xl" />
+      </div>
     </div>
   );
 }
@@ -98,25 +122,30 @@ export default function DashboardPage() {
           {loadError}
         </p>
       )}
-      {!summary && !loadError && (
-        <p className="px-6 py-4 text-sm text-ink-muted md:px-10">Loading…</p>
-      )}
+      {!summary && !loadError && <LoadingState />}
       {summary && summary.recent_incidents.length === 0 && <EmptyState />}
       {summary && summary.recent_incidents.length > 0 && (
         <PageShell width="wide">
           <PageHeader title="Dashboard" description="Your incidents and what the runs found." />
 
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <StatTile label="Open incidents" value={String(summary.open_incidents)} />
-            <StatTile label="Runs" value={String(summary.total_runs)} />
-            <StatTile
-              label="Runs whose first answer broke a rule"
-              value={String(summary.runs_with_violations)}
-            />
-          </section>
+          <Stagger as="section" className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StaggerItem>
+              <StatTile label="Open incidents" value={summary.open_incidents} icon={FolderOpen} />
+            </StaggerItem>
+            <StaggerItem>
+              <StatTile label="Runs" value={summary.total_runs} icon={Play} />
+            </StaggerItem>
+            <StaggerItem>
+              <StatTile
+                label="Runs whose first answer broke a rule"
+                value={summary.runs_with_violations}
+                icon={TriangleAlert}
+              />
+            </StaggerItem>
+          </Stagger>
 
-          <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border border-line bg-surface p-5">
+          <Stagger as="section" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <StaggerItem className="rounded-xl border border-line bg-surface p-5">
               <h2 className="mb-3 text-sm font-medium text-ink">Verdicts</h2>
               {Object.keys(summary.verdict_breakdown).length > 0 ? (
                 <VerdictPieChart breakdown={summary.verdict_breakdown} />
@@ -125,25 +154,27 @@ export default function DashboardPage() {
                   No completed runs yet.
                 </p>
               )}
-            </div>
-            <div className="rounded-xl border border-line bg-surface p-5">
+            </StaggerItem>
+            <StaggerItem className="rounded-xl border border-line bg-surface p-5">
               <h2 className="mb-3 text-sm font-medium text-ink">Severity</h2>
               <SeverityBarChart breakdown={summary.severity_breakdown} />
-            </div>
-            <div className="rounded-xl border border-line bg-surface p-5 lg:col-span-2">
+            </StaggerItem>
+            <StaggerItem className="rounded-xl border border-line bg-surface p-5 lg:col-span-2">
               <h2 className="mb-3 text-sm font-medium text-ink">Runs, last 30 days (UTC)</h2>
               {summary.runs_over_time.length > 0 ? (
                 <RunsLineChart data={summary.runs_over_time} />
               ) : (
                 <p className="py-16 text-center text-sm text-ink-muted">No runs in the last 30 days.</p>
               )}
-            </div>
-          </section>
+            </StaggerItem>
+          </Stagger>
 
-          <section className="overflow-x-auto rounded-xl border border-line bg-surface">
-            <h2 className="px-5 pb-1 pt-5 text-sm font-medium text-ink">Recent incidents</h2>
-            <RecentIncidentsTable incidents={summary.recent_incidents} />
-          </section>
+          <Reveal>
+            <section className="overflow-x-auto rounded-xl border border-line bg-surface">
+              <h2 className="px-5 pb-1 pt-5 text-sm font-medium text-ink">Recent incidents</h2>
+              <RecentIncidentsTable incidents={summary.recent_incidents} />
+            </section>
+          </Reveal>
         </PageShell>
       )}
     </div>

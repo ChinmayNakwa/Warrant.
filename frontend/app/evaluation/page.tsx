@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { PageHeader, PageShell } from "@/components/PageShell";
+import { Reveal, Skeleton } from "@/components/motion";
 import { PrecisionRecallChart } from "@/components/charts/PrecisionRecallChart";
 import {
   ApiError,
@@ -138,11 +139,11 @@ function ModelResults({ result }: { result: EvaluationResults }) {
         </p>
       </header>
 
-      <div className={`${CARD} overflow-x-auto`}>
+      <Reveal className={`${CARD} overflow-x-auto`}>
         <ComparisonTable result={result} />
-      </div>
+      </Reveal>
 
-      <div className={CARD}>
+      <Reveal className={CARD}>
         <h3 className={HEADING}>Technique precision and recall</h3>
         <PrecisionRecallChart
           data={[
@@ -150,9 +151,9 @@ function ModelResults({ result }: { result: EvaluationResults }) {
             { label: "Guarded", precision: guarded.precision.mean, recall: guarded.recall.mean },
           ]}
         />
-      </div>
+      </Reveal>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <Reveal className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className={`${CARD} flex flex-col gap-1`}>
           <h3 className={HEADING}>What the guardrail did</h3>
           <Stat label="Runs" value={g.runs} />
@@ -175,9 +176,9 @@ function ModelResults({ result }: { result: EvaluationResults }) {
           <p className="text-sm text-ink-secondary">Recall: {tally(result.paired.recall)}</p>
           <p className="text-sm text-ink-secondary">Verdict: {tally(result.paired.verdict)}</p>
         </div>
-      </div>
+      </Reveal>
 
-      <div className={`${CARD} overflow-x-auto`}>
+      <Reveal className={`${CARD} overflow-x-auto`}>
         <h3 className={HEADING}>Scenarios</h3>
         <table className="w-full border-collapse">
           <thead>
@@ -190,7 +191,7 @@ function ModelResults({ result }: { result: EvaluationResults }) {
           </thead>
           <tbody>
             {baseline.scenarios.map((scenario, i) => (
-              <tr key={`${scenario.capture}/${scenario.scenario}`}>
+              <tr key={`${scenario.capture}/${scenario.scenario}`} className="transition-colors hover:bg-sunken">
                 <td className={TD}>
                   <span className="text-ink">{scenario.scenario}</span>{" "}
                   <span className="font-mono text-xs text-ink-muted">{scenario.capture}</span>
@@ -209,7 +210,7 @@ function ModelResults({ result }: { result: EvaluationResults }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -242,7 +243,14 @@ export default function EvaluationPage() {
             {loadError}
           </p>
         )}
-        {!results && !loadError && <p className="text-sm text-ink-muted">Loading…</p>}
+        {!results && !loadError && (
+          <div role="status" className="flex flex-col gap-4">
+            <span className="sr-only">Loading…</span>
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-72 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
+        )}
         {results && results.length === 0 && (
           <p className="text-sm text-ink-muted">
             No evaluation has been run yet. Run{" "}
