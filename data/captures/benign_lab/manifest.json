@@ -1,0 +1,10 @@
+{
+  "name": "benign_lab",
+  "host": "WIN11-OPS",
+  "scenario": "benign_lab_lookalikes",
+  "synthetic": true,
+  "event_count": 29,
+  "starts_at": "2026-01-16T09:00:00.000",
+  "ends_at": "2026-01-16T10:15:06.400",
+  "notes": "Hand-written synthetic Sysmon JSON-lines. Six pieces of ordinary administration that each resemble an attack technique, fifteen minutes apart so that no scenario's telemetry reaches another's. Every scenario is benign. Ground truth in labels.json."
+}

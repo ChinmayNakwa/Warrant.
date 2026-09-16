@@ -1,0 +1,71 @@
+{
+  "capture": "benign_lab",
+  "scenarios": [
+    {
+      "name": "agent_encoded_powershell",
+      "description": "The Intune management agent runs a device compliance check as SYSTEM: an encoded, policy-bypassing PowerShell command that reads the BitLocker status of C: and writes it to the agent's cache folder.",
+      "alert_title": "Endpoint alert: powershell.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process powershell.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001102}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1059.001 and T1027: a hidden-from-view encoded command run as SYSTEM. The parent is the management agent, the command decodes to a read-only status query, and nothing leaves the host from it."
+    },
+    {
+      "name": "procdump_own_service",
+      "description": "A developer takes a full memory dump of their own hung OrderService.exe with Sysinternals ProcDump and writes it to D:\\Dumps.",
+      "alert_title": "Endpoint alert: procdump64.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process procdump64.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001202}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1003.001: ProcDump opening a process with full access and writing a .dmp. The process dumped is the developer's own service, not lsass.exe."
+    },
+    {
+      "name": "scheduled_system_backup",
+      "description": "Task Scheduler starts the nightly Windows Server Backup job: wbadmin start backup takes a shadow copy of C: and the backup engine writes the image to E:\\WindowsImageBackup.",
+      "alert_title": "Endpoint alert: wbadmin.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process wbadmin.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001301}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1490 or T1003.003: wbadmin and the Volume Shadow Copy service. The job creates a backup; nothing is deleted and no hive or ntds.dit is copied out."
+    },
+    {
+      "name": "onedrive_first_setup",
+      "description": "At a user's first logon the OneDrive installer that ships with Windows downloads the client, adds its Run key so it starts at logon, and registers its update task.",
+      "alert_title": "Endpoint alert: OneDriveSetup.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process OneDriveSetup.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001401}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1547.001, T1053.005 and T1105: a download, a Run key and a scheduled task in a few seconds. All three are the stock installer's documented behaviour, from its own path to Microsoft's servers."
+    },
+    {
+      "name": "certutil_hash_check",
+      "description": "From an interactive PowerShell window a user runs certutil -hashfile to print the SHA-256 of an installer in their Downloads folder.",
+      "alert_title": "Endpoint alert: certutil.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process certutil.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001502}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1140 or T1105, which certutil is known for. -hashfile only reads a file and prints its hash; nothing is decoded, downloaded or written."
+    },
+    {
+      "name": "scheduled_log_archive",
+      "description": "A scheduled task runs a maintenance script as a service account: it zips last month's IIS logs and robocopy moves the archive to a hidden share on the file server.",
+      "alert_title": "Endpoint alert: powershell.exe on WIN11-OPS",
+      "alert": "Alert on WIN11-OPS: process powershell.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{00000000-0000-0000-0000-000000001601}",
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "Looks like T1560.001 and T1021.002 or T1048: data zipped by a policy-bypassing PowerShell and sent over SMB to a $ share. The data is web server logs, the target is the internal file server, and the task runs from C:\\Scripts on a schedule."
+    }
+  ]
+}

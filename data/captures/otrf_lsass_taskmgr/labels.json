@@ -9,7 +9,7 @@
   "scenarios": [
     {
       "name": "lsass_dump_taskmgr",
-      "description": "Real capture: a user in an RDP session opens Task Manager and uses it to write lsass.DMP to their Temp folder. The file-create event is the only direct trace.",
+      "description": "Real capture: a user in an RDP session opens Task Manager and uses it to write lsass.DMP to their Temp folder. The direct traces are Task Manager opening lsass.exe with full access and the dump file being created.",
       "alert_title": "Endpoint alert: taskmgr.exe on WORKSTATION5.theshire.local",
       "alert": "Alert on WORKSTATION5.theshire.local: process taskmgr.exe. Review this process and its related activity.",
       "anchor_process_guid": "{b34bc01c-b7f3-5f69-df02-000000000900}",
@@ -31,6 +31,20 @@
         ]
       },
       "label_note": "T1021.001 accepted: OTRF records the session as RDP; the kept events do not show the logon itself."
+    },
+    {
+      "name": "driver_host_at_logon",
+      "description": "Real capture, the same recording: nine seconds before Task Manager is opened, the service control manager starts WUDFHost.exe, the user-mode driver host, as part of the RDP logon.",
+      "alert_title": "Endpoint alert: WUDFHost.exe on WORKSTATION5.theshire.local",
+      "alert": "Alert on WORKSTATION5.theshire.local: process WUDFHost.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{b34bc01c-b7ea-5f69-d202-000000000900}",
+      "related_process_guids": [
+        "{b34bc01c-b7ea-5f69-d202-000000000900}"
+      ],
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "The events a model reads for this process are the logon around it (LogonUI, rdpclip, AtBroker, theme and print-spooler registry writes). None of them belongs to Task Manager or to anything it started."
     }
   ]
 }

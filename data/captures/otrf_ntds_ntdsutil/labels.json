@@ -31,6 +31,20 @@
         ]
       },
       "label_note": "T1059.003 accepted: ntdsutil is started from an interactive cmd.exe."
+    },
+    {
+      "name": "compatibility_telemetry_run",
+      "description": "Real capture, the same recording: a minute after ntdsutil, Windows' scheduled compatibility appraiser (CompatTelRunner.exe) starts and writes its inventory to the registry.",
+      "alert_title": "Endpoint alert: CompatTelRunner.exe on DC01.pandalab.com",
+      "alert": "Alert on DC01.pandalab.com: process CompatTelRunner.exe. Review this process and its related activity.",
+      "anchor_process_guid": "{fe86be69-0999-64b8-0f03-000000001000}",
+      "related_process_guids": [
+        "{fe86be69-0999-64b8-0f03-000000001000}"
+      ],
+      "expected_verdict": "BENIGN",
+      "expected_techniques": [],
+      "accepted_techniques": [],
+      "label_note": "The process writes so many registry values of its own that they fill what a model reads; nothing from ntdsutil or the shadow copy is among them."
     }
   ]
 }
