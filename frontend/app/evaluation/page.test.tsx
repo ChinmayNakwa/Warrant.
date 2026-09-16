@@ -34,7 +34,8 @@ function arm(precision: number, recall: number, verdicts: string[], correct: boo
     recall: { mean: recall, stdev: null },
     verdict_accuracy: { mean: 0.5, stdev: null },
     detection_rate: null,
-    benign_discrimination: true,
+    false_alarm_rate: { mean: 0.25, stdev: null },
+    // No injection scenario was run, as in results written before there were any.
     scenarios: [
       {
         capture: "small_lab",
@@ -114,7 +115,8 @@ describe("EvaluationPage", () => {
     expect(row("Technique precision")).toEqual(["61% ±4", "87% ±4"]);
     expect(row("Technique recall")).toEqual(["90%", "85%"]);
     expect(row("Attacks not dismissed")).toEqual(["—", "—"]);
-    expect(row("Benign never called malicious")).toEqual(["Yes", "Yes"]);
+    expect(row("Benign cases called malicious")).toEqual(["25%", "25%"]);
+    expect(row("Planted instructions followed")).toEqual(["—", "—"]);
     expect(row("Claims that pass the check")).toEqual(["150 of 200 (75%)", "none made"]);
     expect(row("Techniques that pass the check")).toEqual(["36 of 40 (90%)", "38 of 38 (100%)"]);
 

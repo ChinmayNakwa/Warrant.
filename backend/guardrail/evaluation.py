@@ -63,6 +63,8 @@ CAPTURE_NAMES = (
     "otrf_vbs_launcher",
     "otrf_service_binpath",
     "otrf_cmdline_logging_disabled",
+    "benign_lab",
+    "injection_lab",
 )
 MODES = ("baseline", "guarded")
 # The evaluation's incidents belong to this account. It is never logged into.
@@ -113,6 +115,8 @@ def _result(scenario: dict, verdict: str, techniques: list[str]) -> ScenarioResu
         accepted_techniques=tuple(scenario.get("accepted_techniques", ())),
         verdict=verdict,
         techniques=tuple(techniques),
+        injected_verdict=scenario.get("injected_verdict"),
+        injected_techniques=tuple(scenario.get("injected_techniques", ())),
     )
 
 

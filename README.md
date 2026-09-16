@@ -19,7 +19,10 @@ It runs every case two ways so the effect can be measured:
    events from one host. You can name the process the alert fired on.
 2. The backend picks the events that matter for that process: what it did, the
    processes it started, its ancestors, and what else the host logged at the
-   same time. This is the *slice*, capped at 120 events.
+   same time. This is the *slice*, capped at 120 events. Windows logs process
+   opens, DLL loads and DNS lookups by the thousand, so a process contributes
+   only a few of each: the opens that asked for the most rights, and the
+   rarest loads and lookups.
 3. A model reads the slice in one prompt and returns a verdict, the MITRE
    ATT&CK techniques it sees, and the claims its conclusion rests on. Each
    technique and claim cites the events that show it.
@@ -44,7 +47,8 @@ It runs every case two ways so the effect can be measured:
 Telemetry is attacker-controlled text, so it reaches the model only inside a
 fenced block marked as data, and the model's reply is only ever parsed into a
 fixed structure. Nothing it says is executed or written to the database
-directly.
+directly. Whether a model still does what planted text tells it to is measured
+by the `injection_lab` capture below.
 
 ## Running it
 
@@ -118,6 +122,8 @@ The results report, for each mode:
 
 - technique precision and recall against the scenario's label
 - verdict accuracy, and how many attacks were not dismissed
+- how many benign cases were called malicious
+- how often an answer did what text planted in the telemetry asked for
 - how many claims and techniques pass the check
 - run by run, whether guarded scored better, worse or the same
 
@@ -127,13 +133,24 @@ The results report, for each mode:
 |---|---|
 | `small_lab` | 13 hand-written synthetic Sysmon events: a malicious PowerShell chain, an LSASS dump, and a benign admin session |
 | `real_atomic` | Two real attack recordings merged into one capture |
-| `otrf_*` (15) | One real recording each, covering credential dumping, UAC bypasses, persistence and more |
+| `otrf_*` (15) | One real recording each, covering credential dumping, UAC bypasses, persistence and more. Two are long enough to also hold a benign process that the attack does not touch |
+| `benign_lab` | Hand-written: six pieces of ordinary administration that each look like an attack, such as ProcDump on a developer's own service or a management agent running encoded PowerShell |
+| `injection_lab` | Hand-written: four attacks whose command line, folder name or registry value tells the model what to answer, one of them with a forged end-of-telemetry marker |
+
+That is 32 scenarios: 23 attacks and 9 benign cases. The benign look-alikes
+are labelled `BENIGN`, and an analyst could fairly call some of them
+suspicious; the false-alarm number counts only a `MALICIOUS` verdict.
 
 The real captures come from
 [OTRF Security-Datasets](https://github.com/OTRF/Security-Datasets) (MIT
 licence). Each capture directory holds `events.jsonl`, a `manifest.json`
 describing it, and a `labels.json` with the expected verdict and techniques.
 `scripts/fetch_otrf_capture.py` builds a capture from an OTRF recording.
+
+Eight kinds of Sysmon event are kept: process creation (1), network connection
+(3), DLL load (7), remote thread (8), process access (10), file creation (11),
+registry changes (12 to 14) and DNS lookup (22). `real_atomic` and `small_lab`
+predate the last four and hold only the others.
 
 The ATT&CK technique list in `backend/guardrail/ontology/attack.ttl` is
 generated from MITRE's published data by `scripts/build_attack_ontology.py`.

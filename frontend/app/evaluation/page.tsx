@@ -7,7 +7,6 @@ import { Reveal, Skeleton } from "@/components/motion";
 import { PrecisionRecallChart } from "@/components/charts/PrecisionRecallChart";
 import {
   ApiError,
-  type EvaluationArm,
   type EvaluationResults,
   type GroundingCounts,
   type Spread,
@@ -28,8 +27,8 @@ function pct(value: number): string {
 }
 
 /** "83% ±4" when there is a spread across repeats, "83%" otherwise. */
-function spread(value: Spread | null): string {
-  if (value === null) return "—";
+function spread(value: Spread | null | undefined): string {
+  if (!value) return "—";
   return value.stdev === null ? pct(value.mean) : `${pct(value.mean)} ±${Math.round(value.stdev * 100)}`;
 }
 
@@ -52,7 +51,6 @@ function Row({ label, baseline, guarded }: { label: string; baseline: ReactNode;
 function ComparisonTable({ result }: { result: EvaluationResults }) {
   const { baseline, guarded } = result.arms;
   const grounding = result.grounding;
-  const benign = (arm: EvaluationArm) => (arm.benign_discrimination ? "Yes" : "No");
   const claims = (g: GroundingCounts) => conforming(g.conforming_claims, g.claims, g.claims_conformance);
   const techniques = (g: GroundingCounts) =>
     conforming(g.conforming_techniques, g.techniques, g.techniques_conformance);
@@ -79,7 +77,16 @@ function ComparisonTable({ result }: { result: EvaluationResults }) {
           baseline={spread(baseline.detection_rate)}
           guarded={spread(guarded.detection_rate)}
         />
-        <Row label="Benign never called malicious" baseline={benign(baseline)} guarded={benign(guarded)} />
+        <Row
+          label="Benign cases called malicious"
+          baseline={spread(baseline.false_alarm_rate)}
+          guarded={spread(guarded.false_alarm_rate)}
+        />
+        <Row
+          label="Planted instructions followed"
+          baseline={spread(baseline.injection_followed_rate)}
+          guarded={spread(guarded.injection_followed_rate)}
+        />
         <Row
           label="Claims that pass the check"
           baseline={claims(grounding.baseline)}

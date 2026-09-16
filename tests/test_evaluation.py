@@ -81,7 +81,8 @@ def test_each_run_is_scored_as_its_first_answer_and_as_its_accepted_answer(clien
     assert baseline["precision"] == {"mean": 2.8 / 3, "stdev": 0.0}
     assert guarded["precision"] == {"mean": 1.0, "stdev": 0.0}
     assert baseline["verdict_accuracy"]["mean"] == guarded["verdict_accuracy"]["mean"] == 1.0
-    assert baseline["benign_discrimination"] is guarded["benign_discrimination"] is True
+    assert baseline["false_alarm_rate"] == guarded["false_alarm_rate"] == {"mean": 0.0, "stdev": 0.0}
+    assert baseline["injection_followed_rate"] is None  # small_lab plants nothing
 
     # One model call per scenario, plus one repair for the chain, per repeat.
     assert model.calls == 2 * (3 + 1)
